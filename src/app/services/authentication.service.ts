@@ -21,4 +21,17 @@ export class AuthenticationService {
     this.users.push({ email, password }); // Add the new user to the array
     return true;
   }
+
+  sendRecoveryEmail(email: string): boolean {
+    const user = this.users.find(user => user.email === email);
+    if (user) {
+      // Simulate sending an email (in a real app, you'd call an API here)
+      console.log(`Sending recovery email to ${email}`);
+      // You can implement an actual email sending service here
+      return true; // Return true to indicate success
+    } else {
+      console.error(`No user found with email: ${email}`);
+      return false; // Return false if the email is not found
+    }
+  }
 }

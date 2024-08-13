@@ -39,7 +39,7 @@
               <ion-input type="password" [(ngModel)]="password" required></ion-input>
             </ion-item>
 
-            <!-- Entrar Button -->
+            <!-- Login Button -->
             <ion-button (click)="login()" shape="round" color="secondary" expand="full">Entrar</ion-button>
 
             <!-- Sign In Button linked to Register Page -->
@@ -51,10 +51,14 @@
                 Forgot your password?
               </ion-label>
             </div>
+
+            <!-- Error Message Display -->
+            <div *ngIf="errorMessage" class="error-message">
+              <p style="color: red;">{{ errorMessage }}</p>
+            </div>
           </ion-card-content>
         </ion-col>
       </ion-row>
     </ion-card>
   </div>
 </ion-content>
-

@@ -33,6 +33,7 @@ export class LoginPage implements OnInit {
   }
 
   forgotPassword() {
-    alert('Password recovery options would go here.');
+    this.navCtrl.navigateForward('/recovery'); // Navigate to Password Recovery page
   }
 }
+
