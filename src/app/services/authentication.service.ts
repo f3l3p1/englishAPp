@@ -1,37 +1,59 @@
 import { Injectable } from '@angular/core';
 
+interface User {
+  name: string;
+  username: string;
+  email: string;
+  password: string; // In a real app, store hashed passwords
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
-  private users = [
-    { email: 'test@example.com', password: 'password' } // Example user, replace with real data source
+  private users: User[] = [
+    { name: 'Test User', username: 'testuser', email: 'test@example.com', password: 'password' } // Example user
   ];
+  
+  private currentUser: User | null = null; // To keep track of the logged-in user
 
-  constructor() { }
+  constructor() {}
 
   login(email: string, password: string): boolean {
     const user = this.users.find(user => user.email === email && user.password === password);
-    return !!user; // Returns true if user is found, false otherwise
+    if (user) {
+      this.currentUser = user; // Set the current user on successful login
+      return true;
+    }
+    return false; // Returns false if authentication fails
   }
 
   register(name: string, username: string, email: string, password: string): boolean {
-    // In a real application, you'd send this data to a backend server to save it.
-    // Here we are just returning true for demonstration purposes.
-    this.users.push({ email, password }); // Add the new user to the array
-    return true;
+    const existingUser = this.users.find(user => user.email === email);
+    if (existingUser) {
+      console.error('User already exists');
+      return false; // User already exists
+    }
+    this.users.push({ name, username, email, password }); // Add the new user to the array
+    return true; // Registration successful
   }
 
   sendRecoveryEmail(email: string): boolean {
     const user = this.users.find(user => user.email === email);
     if (user) {
-      // Simulate sending an email (in a real app, you'd call an API here)
       console.log(`Sending recovery email to ${email}`);
-      // You can implement an actual email sending service here
       return true; // Return true to indicate success
     } else {
       console.error(`No user found with email: ${email}`);
       return false; // Return false if the email is not found
     }
+  }
+
+  getCurrentUser(): User | null {
+    return this.currentUser; // Return the current user data
+  }
+
+  logout(): void {
+    this.currentUser = null; // Clear current user on logout
   }
 }

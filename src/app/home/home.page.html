@@ -15,11 +15,11 @@
 </ion-header>
 
 <ion-content>
-  <div class="user-profile">
-    <img src="path/to/profile-picture.jpg" alt="Profile Picture" class="profile-picture" />
+  <div class="user-profile" *ngIf="user"> <!-- Only show if user is defined -->
+    <img [src]="user.profilePicture || 'path/to/default/profile-picture.jpg'" alt="Profile Picture" class="profile-picture" />
     <div class="user-info">
-      <h2>User Name</h2>
-      <p>Email: user&#64;example.com</p> <!-- Changed @ to &#64; -->
+      <h2>{{ user.name }}</h2>
+      <p>Email: {{ user.email }}</p>
     </div>
   </div>
 
@@ -29,17 +29,17 @@
         <div class="stat-item">
           <ion-icon name="checkmark-circle-outline"></ion-icon>
           <h3>Completed Sessions</h3>
-          <p>10</p>
+          <p>{{ user.completedSessions || 0 }}</p> <!-- Assuming you have these stats -->
         </div>
         <div class="stat-item">
           <ion-icon name="checkmark-done-outline"></ion-icon>
           <h3>Completed Tasks</h3>
-          <p>25</p>
+          <p>{{ user.completedTasks || 0 }}</p>
         </div>
         <div class="stat-item">
           <ion-icon name="trophy-outline"></ion-icon>
           <h3>Achievements</h3>
-          <p>5</p>
+          <p>{{ user.achievements || 0 }}</p>
         </div>
       </div>
     </ion-card-content>
@@ -135,6 +135,5 @@
     padding: 16px;
   }
 </style>
-
 
 
