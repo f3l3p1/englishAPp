@@ -46,7 +46,10 @@
   </ion-card>
 
   <section class="courses-section">
-    <h2>Courses</h2>
+    <div class="section-header">
+      <h2>Courses</h2>
+      <a routerLink="/all-courses" class="view-all">Ver todas</a> <!-- Link to view all courses -->
+    </div>
     <div class="courses-scroll">
       <div class="course-item">Course 1</div>
       <div class="course-item">Course 2</div>
@@ -57,7 +60,10 @@
   </section>
 
   <section class="news-section">
-    <h2>News</h2>
+    <div class="section-header">
+      <h2>News</h2>
+      <a routerLink="/all-news" class="view-all">Ver todas</a> <!-- Link to view all news -->
+    </div>
     <p>Latest updates and news related to the organization will be posted here.</p>
   </section>
 
@@ -113,8 +119,24 @@
     text-align: center;
   }
 
-  .courses-section {
+  .courses-section, .news-section {
     padding: 16px;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between; /* This will push the title and link to opposite sides */
+    align-items: center; /* Aligns items vertically */
+  }
+
+  .view-all {
+    color: #007bff; /* Change to your desired link color */
+    text-decoration: none; /* Remove underline from link */
+    font-weight: bold; /* Make the link bold */
+  }
+
+  .view-all:hover {
+    text-decoration: underline; /* Add underline on hover for better UX */
   }
 
   .courses-scroll {
@@ -130,10 +152,5 @@
     background-color: #f0f0f0;
     border-radius: 8px;
   }
-
-  .news-section {
-    padding: 16px;
-  }
 </style>
-
 

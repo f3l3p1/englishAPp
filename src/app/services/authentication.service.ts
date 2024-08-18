@@ -11,49 +11,64 @@ interface User {
   providedIn: 'root'
 })
 export class AuthenticationService {
-  private users: User[] = [
-    { name: 'Test User', username: 'testuser', email: 'test@example.com', password: 'password' } // Example user
-  ];
-  
-  private currentUser: User | null = null; // To keep track of the logged-in user
+  private users: User[] = [];
+  private currentUser: User | null = null;
 
-  constructor() {}
+  constructor() {
+    // Load users and current user from localStorage on service initialization
+    const storedUsers = localStorage.getItem('users');
+    if (storedUsers) {
+      this.users = JSON.parse(storedUsers);
+    }
+
+    const storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+      this.currentUser = JSON.parse(storedUser);
+    }
+  }
 
   login(email: string, password: string): boolean {
     const user = this.users.find(user => user.email === email && user.password === password);
     if (user) {
-      this.currentUser = user; // Set the current user on successful login
+      this.currentUser = user;
+      localStorage.setItem('currentUser', JSON.stringify(this.currentUser)); // Persist to localStorage
       return true;
     }
-    return false; // Returns false if authentication fails
+    return false;
   }
 
   register(name: string, username: string, email: string, password: string): boolean {
     const existingUser = this.users.find(user => user.email === email);
     if (existingUser) {
       console.error('User already exists');
-      return false; // User already exists
+      return false;
     }
-    this.users.push({ name, username, email, password }); // Add the new user to the array
-    return true; // Registration successful
+    const newUser: User = { name, username, email, password };
+    this.users.push(newUser);
+
+    // Persist the updated users array to localStorage
+    localStorage.setItem('users', JSON.stringify(this.users));
+
+    return true;
   }
 
   sendRecoveryEmail(email: string): boolean {
     const user = this.users.find(user => user.email === email);
     if (user) {
       console.log(`Sending recovery email to ${email}`);
-      return true; // Return true to indicate success
+      return true;
     } else {
       console.error(`No user found with email: ${email}`);
-      return false; // Return false if the email is not found
+      return false;
     }
   }
 
   getCurrentUser(): User | null {
-    return this.currentUser; // Return the current user data
+    return this.currentUser;
   }
 
   logout(): void {
-    this.currentUser = null; // Clear current user on logout
+    this.currentUser = null;
+    localStorage.removeItem('currentUser'); // Clear from localStorage on logout
   }
 }
