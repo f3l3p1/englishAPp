@@ -5,7 +5,7 @@
         <ion-icon name="notifications-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Your App Name</ion-title>
+    <ion-title>User Information</ion-title>
     <ion-buttons slot="end">
       <ion-button>
         <ion-icon name="settings-outline"></ion-icon>
@@ -27,46 +27,46 @@
     <ion-card-content>
       <div class="stats-section">
         <div class="stat-item">
-          <ion-icon name="checkmark-circle-outline"></ion-icon>
           <h3>Completed Sessions</h3>
-          <p>{{ user.completedSessions || 0 }}</p> <!-- Assuming you have these stats -->
+          <p>{{ user.completedSessions || 0 }}</p>
         </div>
         <div class="stat-item">
-          <ion-icon name="checkmark-done-outline"></ion-icon>
           <h3>Completed Tasks</h3>
           <p>{{ user.completedTasks || 0 }}</p>
         </div>
         <div class="stat-item">
-          <ion-icon name="trophy-outline"></ion-icon>
           <h3>Achievements</h3>
           <p>{{ user.achievements || 0 }}</p>
+        </div>
+      </div>
+
+      <!-- Current Course -->
+      <div class="course-info" *ngIf="currentCourse">
+        <img [src]="currentCourse.image" alt="Course Image" class="course-image" />
+        <div class="course-details">
+          <h3>{{ currentCourse.name }}</h3>
+          <p>{{ currentCourse.description }}</p>
+          <a routerLink="/courses/{{ currentCourse.id }}" class="see-more">See more</a>
+
+          <!-- Progress Bar -->
+          <ion-progress-bar value="{{ currentCourse.progress / 100 }}"></ion-progress-bar>
         </div>
       </div>
     </ion-card-content>
   </ion-card>
 
-  <section class="courses-section">
-    <div class="section-header">
-      <h2>Courses</h2>
-      <a routerLink="/all-courses" class="view-all">Ver todas</a> <!-- Link to view all courses -->
-    </div>
-    <div class="courses-scroll">
-      <div class="course-item">Course 1</div>
-      <div class="course-item">Course 2</div>
-      <div class="course-item">Course 3</div>
-      <div class="course-item">Course 4</div>
-      <div class="course-item">Course 5</div>
+  <!-- Past Sessions Section -->
+  <section class="past-sessions">
+    <h2>Past Sessions</h2>
+    <div class="sessions-scroll">
+      <ng-container *ngFor="let session of pastSessions">
+        <div class="session-item">
+          <h3>{{ session.name }}</h3>
+          <a routerLink="/comments/{{ session.id }}" class="see-comments">See comments</a>
+        </div>
+      </ng-container>
     </div>
   </section>
-
-  <section class="news-section">
-    <div class="section-header">
-      <h2>News</h2>
-      <a routerLink="/all-news" class="view-all">Ver todas</a> <!-- Link to view all news -->
-    </div>
-    <p>Latest updates and news related to the organization will be posted here.</p>
-  </section>
-
 </ion-content>
 
 <ion-footer>
@@ -75,7 +75,7 @@
       <ion-button routerLink="/home" [class.active]="isActive('home')">
         <ion-icon name="home-outline" [class.red]="isActive('home')"></ion-icon>
       </ion-button>
-      <ion-button routerLink="/user-information" [class.active]="isActive('user-information')"> <!-- Link to User Info -->
+      <ion-button routerLink="/user-information" [class.active]="isActive('user-information')">
         <ion-icon name="person-outline" [class.red]="isActive('user-information')"></ion-icon> <!-- User icon -->
       </ion-button>
     </ion-buttons>
@@ -91,7 +91,7 @@
 </ion-footer>
 
 
-<style>
+<style scoped>
   .user-profile {
     display: flex;
     align-items: center;
@@ -118,43 +118,39 @@
     text-align: center;
   }
 
-  .courses-section, .news-section {
+  .course-info {
+    display: flex;
+    align-items: center;
+    margin-top: 16px;
+  }
+
+  .course-image {
+    width: 80px;
+    height: auto; /* Adjust as needed */
+    margin-right: 16px;
+  }
+
+  .course-details {
+    flex-grow: 1; /* Allow details to take up remaining space */
+  }
+
+  .past-sessions {
     padding: 16px;
   }
 
-  .section-header {
-    display: flex;
-    justify-content: space-between; /* This will push the title and link to opposite sides */
-    align-items: center; /* Aligns items vertically */
-  }
-
-  .view-all {
-    color: #007bff; /* Change to your desired link color */
-    text-decoration: none; /* Remove underline from link */
-    font-weight: bold; /* Make the link bold */
-  }
-
-  .view-all:hover {
-    text-decoration: underline; /* Add underline on hover for better UX */
-  }
-
-  .courses-scroll {
+  .sessions-scroll {
     display: flex;
     overflow-x: auto; /* Enables horizontal scrolling */
-    padding: 16px;
+    padding: 8px;
   }
 
-  .course-item {
-    display: inline-block;
+  .session-item {
     padding: 8px;
     margin-right: 10px;
     background-color: #f0f0f0;
     border-radius: 8px;
-  }
-
-  .red {
-    color: red; /* Color for active icon */
+    min-width: 150px; /* Adjust based on your design */
+    text-align: center; /* Center the text */
   }
 </style>
-
 

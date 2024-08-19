@@ -7,12 +7,52 @@ interface User {
   password: string; // In a real app, store hashed passwords
 }
 
+interface Course {
+  id: string;
+  name: string;
+  description: string;
+  image: string; // URL of the course image
+  progress: number; // Progress percentage
+}
+
+interface Session {
+  id: string;
+  name: string; // Name of the session
+  date: Date; // Date of the session
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
   private users: User[] = [];
   private currentUser: User | null = null;
+  
+  // Mock data for courses and sessions
+  private courses: Course[] = [
+    {
+      id: '1',
+      name: 'Introduction to Angular',
+      description: 'Learn the basics of Angular framework.',
+      image: 'path/to/course-image.jpg',
+      progress: 70
+    }
+    // Add more courses as needed
+  ];
+
+  private sessions: Session[] = [
+    {
+      id: 's1',
+      name: 'Session 1',
+      date: new Date('2023-01-01')
+    },
+    {
+      id: 's2',
+      name: 'Session 2',
+      date: new Date('2023-01-05')
+    }
+    // Add more sessions as needed
+  ];
 
   constructor() {
     // Load users and current user from localStorage on service initialization
@@ -65,6 +105,17 @@ export class AuthenticationService {
 
   getCurrentUser(): User | null {
     return this.currentUser;
+  }
+
+  getCurrentCourse(): Course | null {
+    // For simplicity, returning the first course as the current course
+    // You can implement your own logic to fetch the relevant course for the user
+    return this.courses[0] || null;
+  }
+
+  getPastSessions(): Session[] {
+    // Return past sessions; you may filter based on the current user in a real app
+    return this.sessions.sort((a, b) => b.date.getTime() - a.date.getTime()); // Sort by date descending
   }
 
   logout(): void {
