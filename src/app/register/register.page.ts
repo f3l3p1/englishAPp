@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { AuthenticationService } from '../services/authentication.service'; // Adjust path as necessary
+import { AuthenticationService } from '../services/authentication.service';
 
 @Component({
   selector: 'app-register',
@@ -16,14 +16,13 @@ export class RegisterPage {
 
   constructor(private navCtrl: NavController, private authService: AuthenticationService) {}
 
-  onRegister() {
+  async onRegister() {
     if (this.password !== this.confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
-    
-    // Call the authentication service to register the user
-    const isRegistered = this.authService.register(this.name, this.username, this.email, this.password);
+
+    const isRegistered = await this.authService.register(this.name, this.username, this.email, this.password);
     if (isRegistered) {
       alert('Registration successful! You can now log in.');
       this.navCtrl.navigateBack('/login');
@@ -33,6 +32,6 @@ export class RegisterPage {
   }
 
   navigateToLogin() {
-    this.navCtrl.navigateBack('/login'); // Navigate back to login page
+    this.navCtrl.navigateBack('/login');
   }
 }
