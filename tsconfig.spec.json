@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
-    "types": ["jest", "jasmine"] // Include jest and jasmine if necessary
+    "types": ["jest", "jasmine"]
   },
   "files": [
     "src/test.ts",
@@ -13,5 +13,3 @@
     "src/**/*.d.ts"
   ]
 }
-
-
