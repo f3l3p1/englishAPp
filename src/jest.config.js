@@ -8,5 +8,6 @@ module.exports = {
     testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/dist/'],
     collectCoverage: true,
     coverageReporters: ['html', 'text-summary'],
+    testEnvironment: 'jsdom', // Make sure this is set for Angular projects
   };
   

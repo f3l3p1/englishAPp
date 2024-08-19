@@ -15,36 +15,36 @@ describe('AuthenticationService', () => {
 
   it('should authenticate valid user', async () => {
     const result = await service.login('test@example.com', 'password');
-    expect(result).toBeTrue();
+    expect(result).toBe(true); // Replaced toBeTrue with toBe(true)
   });
 
   it('should not authenticate invalid user', async () => {
     const result = await service.login('invalid@example.com', 'wrongpassword');
-    expect(result).toBeFalse();
+    expect(result).toBe(false); // Replaced toBeFalse with toBe(false)
   });
 
   it('should register a new user', async () => {
     const result = await service.register('New User', 'newuser', 'new@example.com', 'newpassword');
-    expect(result).toBeTrue();
+    expect(result).toBe(true); // Replaced toBeTrue with toBe(true)
     
     // Verify the new user can log in
     const loginResult = await service.login('new@example.com', 'newpassword');
-    expect(loginResult).toBeTrue();
+    expect(loginResult).toBe(true); // Replaced toBeTrue with toBe(true)
   });
 
   it('should not register a duplicate user', async () => {
     await service.register('Test User', 'testuser', 'test@example.com', 'password');
     const result = await service.register('Test User', 'testuser', 'test@example.com', 'password');
-    expect(result).toBeFalse(); // Duplicate registration should fail
+    expect(result).toBe(false); // Duplicate registration should fail
   });
 
   it('should send recovery email for existing user', async () => {
     const result = await service.sendRecoveryEmail('test@example.com');
-    expect(result).toBeTrue();
+    expect(result).toBe(true); // Replaced toBeTrue with toBe(true)
   });
 
   it('should not send recovery email for non-existing user', async () => {
     const result = await service.sendRecoveryEmail('nonexistent@example.com');
-    expect(result).toBeFalse();
+    expect(result).toBe(false); // Replaced toBeFalse with toBe(false)
   });
 });
