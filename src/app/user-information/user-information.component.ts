@@ -16,9 +16,14 @@ export class UserInformationComponent implements OnInit {
 
   ngOnInit() {
     // Fetch user data on component initialization
-    this.user = this.authService.getCurrentUser(); // Get current user data
-    this.currentCourse = this.authService.getCurrentCourse(); // Fetch the current course details
-    this.pastSessions = this.authService.getPastSessions(); // Fetch the user's past sessions
+    this.user = this.authService.getCurrentUser();
+  console.log('User:', this.user);
+
+  this.currentCourse = this.authService.getCurrentCourse();
+  console.log('Current Course:', this.currentCourse);
+
+  this.pastSessions = this.authService.getPastSessions();
+  console.log('Past Sessions:', this.pastSessions);
   }
 
   // Optional: Navigate to a specific course detail page

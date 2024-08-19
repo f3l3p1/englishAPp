@@ -24,9 +24,10 @@ const routes: Routes = [
     loadChildren: () => import('./recovery/recovery.module').then(m => m.RecoveryPageModule)
   },
   {
-    path: 'user-information', // New route for User Information Page
+    path: 'user-information',
     loadChildren: () => import('./user-information/user-information.module').then(m => m.UserInformationModule)
   }
+  
 ];
 
 @NgModule({

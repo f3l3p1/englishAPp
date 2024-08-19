@@ -42,16 +42,15 @@
 
       <!-- Current Course -->
       <div class="course-info" *ngIf="currentCourse">
-        <img [src]="currentCourse.image" alt="Course Image" class="course-image" />
+        <img [src]="currentCourse?.image" alt="Course Image" class="course-image" />
         <div class="course-details">
-          <h3>{{ currentCourse.name }}</h3>
-          <p>{{ currentCourse.description }}</p>
-          <a routerLink="/courses/{{ currentCourse.id }}" class="see-more">See more</a>
-
-          <!-- Progress Bar -->
-          <ion-progress-bar value="{{ currentCourse.progress / 100 }}"></ion-progress-bar>
+          <h3>{{ currentCourse?.name }}</h3>
+          <p>{{ currentCourse?.description }}</p>
+          <a [routerLink]="['/courses', currentCourse?.id]" class="see-more">See more</a>
+          <ion-progress-bar [value]="currentCourse?.progress / 100"></ion-progress-bar>
         </div>
       </div>
+      
     </ion-card-content>
   </ion-card>
 

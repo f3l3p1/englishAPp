@@ -19,5 +19,5 @@ export class HomePage implements OnInit {
   // Method to check if the current page is active
   isActive(page: string): boolean {
     return this.router.url === `/${page}`;
-  }    
+  }  
 }
