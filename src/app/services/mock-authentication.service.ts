@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { User } from '../services/authentication.service'; // Ensure User interface is imported
+import { User } from '../models/user.model'; // Adjusted import to point to the correct User model file
 import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MockAuthenticationService {
-  private users: User[] = []; // Ensure this is also private
+  private users: User[] = []; // Array to hold registered users
 
   constructor() {}
 
@@ -17,7 +17,7 @@ export class MockAuthenticationService {
         console.error('User already exists');
         observer.next(false); // Registration failed
       } else {
-        const newUser: User = { name, username, email, password };
+        const newUser: User = { name, username, email, password }; // Create new user object
         this.users.push(newUser); // Add the new user to the mock array
         observer.next(true); // Registration successful
       }
@@ -41,3 +41,4 @@ export class MockAuthenticationService {
     return this.users.length > 0 ? this.users[0] : null; // Return the first user or null if no users exist
   }
 }
+
