@@ -7,7 +7,7 @@
     </ion-buttons>
     <ion-title>Your App Name</ion-title>
     <ion-buttons slot="end">
-      <ion-button>
+      <ion-button routerLink="/settings">
         <ion-icon name="settings-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -16,7 +16,7 @@
 
 <ion-content>
   <div class="user-profile" *ngIf="user"> <!-- Only show if user is defined -->
-    <img [src]="user.profilePicture || 'path/to/default/profile-picture.jpg'" alt="Profile Picture" class="profile-picture" />
+    <img [src]="user.profilePicture || 'assets/default-profile-picture.jpg'" alt="Profile Picture" class="profile-picture" />
     <div class="user-info">
       <h2>{{ user.name }}</h2>
       <p>Email: {{ user.email }}</p>
@@ -90,8 +90,6 @@
   </ion-toolbar>
 </ion-footer>
 
-
-
 <style>
   .user-profile {
     display: flex;
@@ -157,5 +155,4 @@
     color: red; /* Color for active icon */
   }
 </style>
-
 

@@ -1,25 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { AuthenticationService } from '../services/authentication.service'; // Adjust path as necessary
+import { AuthenticationService } from '../services/authentication.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
-export class LoginPage implements OnInit {
+export class LoginPage {
   email: string = '';
   password: string = '';
   public errorMessage: string = '';
 
   constructor(private navCtrl: NavController, private authService: AuthenticationService) {}
 
-  ngOnInit() {
-    // Any initialization logic can go here
-  }
-
-  login() {
-    const isAuthenticated = this.authService.login(this.email, this.password);
+  async login() {
+    const isAuthenticated = await this.authService.login(this.email, this.password);
     if (isAuthenticated) {
       this.navCtrl.navigateForward('/home');
     } else {
@@ -29,11 +25,10 @@ export class LoginPage implements OnInit {
   }
 
   navigateToRegister() {
-    this.navCtrl.navigateForward('/register'); // Navigate to Register page
+    this.navCtrl.navigateForward('/register');
   }
 
   forgotPassword() {
-    this.navCtrl.navigateForward('/recovery'); // Navigate to Password Recovery page
+    this.navCtrl.navigateForward('/recovery');
   }
 }
-

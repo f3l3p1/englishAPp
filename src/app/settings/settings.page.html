@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Settings</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="updateUserInfo()">Save</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="updateUserInfo()">
+    <ion-item>
+      <ion-label>Name</ion-label>
+      <ion-input [(ngModel)]="user.name" name="name" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Username</ion-label>
+      <ion-input [(ngModel)]="user.username" name="username" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Email</ion-label>
+      <ion-input [(ngModel)]="user.email" name="email" type="email" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Profile Picture</ion-label>
+      <input type="file" (change)="onFileChange($event)" accept="image/*"/>
+    </ion-item>
+
+    <!-- Add more fields for payment methods or any other settings -->
+    
+  </form>
+</ion-content>

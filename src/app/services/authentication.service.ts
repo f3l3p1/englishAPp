@@ -1,125 +1,60 @@
 import { Injectable } from '@angular/core';
-
-interface User {
-  name: string;
-  username: string;
-  email: string;
-  password: string; // In a real app, store hashed passwords
-}
-
-interface Course {
-  id: string;
-  name: string;
-  description: string;
-  image: string; // URL of the course image
-  progress: number; // Progress percentage
-}
-
-interface Session {
-  id: string;
-  name: string; // Name of the session
-  date: Date; // Date of the session
-}
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { User } from '/Users/user/Documents/Workspace/englishApp/src/app/models/user.model'; // Adjust the path if necessary
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
-  private users: User[] = [];
-  private currentUser: User | null = null;
-  
-  // Mock data for courses and sessions
-  private courses: Course[] = [
-    {
-      id: '1',
-      name: 'Introduction to Angular',
-      description: 'Learn the basics of Angular framework.',
-      image: 'path/to/course-image.jpg',
-      progress: 70
-    }
-    // Add more courses as needed
-  ];
+  private apiUrl = 'http://localhost:3000'; // Your backend API URL
 
-  private sessions: Session[] = [
-    {
-      id: 's1',
-      name: 'Session 1',
-      date: new Date('2023-01-01')
-    },
-    {
-      id: 's2',
-      name: 'Session 2',
-      date: new Date('2023-01-05')
-    }
-    // Add more sessions as needed
-  ];
+  constructor(private http: HttpClient, private router: Router) {}
 
-  constructor() {
-    // Load users and current user from localStorage on service initialization
-    const storedUsers = localStorage.getItem('users');
-    if (storedUsers) {
-      this.users = JSON.parse(storedUsers);
-    }
-
-    const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) {
-      this.currentUser = JSON.parse(storedUser);
-    }
-  }
-
-  login(email: string, password: string): boolean {
-    const user = this.users.find(user => user.email === email && user.password === password);
-    if (user) {
-      this.currentUser = user;
-      localStorage.setItem('currentUser', JSON.stringify(this.currentUser)); // Persist to localStorage
-      return true;
-    }
-    return false;
-  }
-
-  register(name: string, username: string, email: string, password: string): boolean {
-    const existingUser = this.users.find(user => user.email === email);
-    if (existingUser) {
-      console.error('User already exists');
+  async login(email: string, password: string): Promise<boolean> {
+    try {
+      const response = await this.http.post<{ token: string; user: User }>(`${this.apiUrl}/login`, { email, password }).toPromise();
+      if (response) { // Check if response is defined
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('currentUser', JSON.stringify(response.user));
+        return true;
+      }
+      return false; // Handle the case where response is undefined
+    } catch (error) {
+      console.error('Login error', error);
       return false;
     }
-    const newUser: User = { name, username, email, password };
-    this.users.push(newUser);
-
-    // Persist the updated users array to localStorage
-    localStorage.setItem('users', JSON.stringify(this.users));
-
-    return true;
   }
 
-  sendRecoveryEmail(email: string): boolean {
-    const user = this.users.find(user => user.email === email);
-    if (user) {
-      console.log(`Sending recovery email to ${email}`);
+  async register(name: string, username: string, email: string, password: string): Promise<boolean> {
+    try {
+      await this.http.post(`${this.apiUrl}/register`, { name, username, email, password }).toPromise();
       return true;
-    } else {
-      console.error(`No user found with email: ${email}`);
+    } catch (error) {
+      console.error('Registration error', error);
       return false;
     }
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('currentUser');
+    this.router.navigate(['/login']);
   }
 
   getCurrentUser(): User | null {
-    return this.currentUser;
+    const user = localStorage.getItem('currentUser');
+    return user ? JSON.parse(user) : null;
   }
 
-  getCurrentCourse(): Course | null {
-    // For simplicity, returning the first course as the current course
-    // You can implement your own logic to fetch the relevant course for the user
-    return this.courses[0] || null;
+  // Example methods to be added
+  getCurrentCourse(): any | null {
+    // Implement your logic here to return the current course
+    return null; // Replace with actual implementation
   }
 
-  getPastSessions(): Session[] {
-    // Return past sessions; you may filter based on the current user in a real app
-    return this.sessions.sort((a, b) => b.date.getTime() - a.date.getTime()); // Sort by date descending
-  }
-
-  logout(): void {
-    this.currentUser = null;
-    localStorage.removeItem('currentUser'); // Clear from localStorage on logout
+  getPastSessions(): any[] {
+    // Implement your logic here to return past sessions
+    return []; // Replace with actual implementation
   }
 }
