@@ -1,7 +1,11 @@
+
 {
   "name": "englishApp",
   "integrations": {
     "capacitor": {}
   },
-  "type": "angular"
+  "type": "angular",
+  "server": {
+    "port": 3000
+  }
 }

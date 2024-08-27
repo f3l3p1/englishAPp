@@ -12,9 +12,9 @@ export class RecoveryPage {
 
   constructor(private navCtrl: NavController, private authService: AuthenticationService) {}
 
-  sendRecoveryEmail() {
+  async sendRecoveryEmail() {
     if (this.email) {
-      const success = this.authService.sendRecoveryEmail(this.email);
+      const success = await this.authService.sendRecoveryEmail(this.email);
       if (success) {
         alert('Recovery email sent! Please check your inbox.');
       } else {

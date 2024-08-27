@@ -15,6 +15,8 @@ export class LoginPage {
   constructor(private navCtrl: NavController, private authService: AuthenticationService) {}
 
   async login() {
+    this.errorMessage = ''; // Clear any previous error message
+
     const isAuthenticated = await this.authService.login(this.email, this.password);
     if (isAuthenticated) {
       this.navCtrl.navigateForward('/home');
@@ -32,3 +34,4 @@ export class LoginPage {
     this.navCtrl.navigateForward('/recovery');
   }
 }
+
