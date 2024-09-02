@@ -40,7 +40,7 @@ db.connect((err) => {
     console.log('Connected to the MySQL database.');
 });
 
-// Endpoint for user registration
+// Endpoint for creating a user
 app.post('/register', async (req, res) => {
     const { nombre, nombreUsuario, correo, contrasena } = req.body;
 
@@ -69,6 +69,67 @@ app.post('/register', async (req, res) => {
             console.error('Error hashing password:', error);
             res.status(500).json({ error: 'Internal server error' });
         }
+    });
+});
+
+// Endpoint for reading all users
+app.get('/users', (req, res) => {
+    const sql = 'SELECT * FROM Usuarios';
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error fetching users:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        res.status(200).json(results);
+    });
+});
+
+// Endpoint for reading a specific user by ID
+app.get('/users/:id', (req, res) => {
+    const userId = req.params.id;
+    const sql = 'SELECT * FROM Usuarios WHERE usuarioID = ?';
+    db.query(sql, [userId], (err, results) => {
+        if (err) {
+            console.error('Error fetching user:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.status(200).json(results[0]);
+    });
+});
+
+// Endpoint for updating a user
+app.put('/users/:id', (req, res) => {
+    const userId = req.params.id;
+    const { nombre, nombreUsuario, correo, contrasena } = req.body;
+    const sql = 'UPDATE Usuarios SET nombre = ?, nombreUsuario = ?, correo = ?, contrasena = ? WHERE usuarioID = ?';
+    db.query(sql, [nombre, nombreUsuario, correo, contrasena, userId], (err, result) => {
+        if (err) {
+            console.error('Error updating user:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.status(200).json({ message: 'User updated successfully' });
+    });
+});
+
+// Endpoint for deleting a user
+app.delete('/users/:id', (req, res) => {
+    const userId = req.params.id;
+    const sql = 'DELETE FROM Usuarios WHERE usuarioID = ?';
+    db.query(sql, [userId], (err, result) => {
+        if (err) {
+            console.error('Error deleting user:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.status(200).json({ message: 'User deleted successfully' });
     });
 });
 

@@ -1,5 +1,4 @@
 // src/app/courses/courses.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -47,8 +46,11 @@ export class CoursesComponent implements OnInit {
 
   ngOnInit() {}
 
-  viewCourse(course: Course) {
-    const courseString = JSON.stringify(course); // Serialize the course object
-    this.router.navigate(['/current-course'], { queryParams: { course: courseString } });
+  // Method to navigate to the current course page with query parameters
+  navigateToCourse(course: Course) {
+    const courseParam = JSON.stringify(course);
+    this.router.navigate(['/current-course'], {
+      queryParams: { course: courseParam },
+    });
   }
 }

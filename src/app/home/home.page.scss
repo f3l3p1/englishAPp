@@ -85,6 +85,7 @@
 
 ion-slides {
   height: auto; /* Ensures slides adjust to content height */
+  overflow-x: auto;
 }
 
 ion-slide {
@@ -100,6 +101,13 @@ ion-card {
   width: 100%;
   --border-radius: 8px;
   text-align: left;
+}
+
+.course-image {
+  width: 100%;
+  height: 120px; /* Adjust height to maintain aspect ratio */
+  object-fit: cover; /* Ensures the image covers the area without distortion */
+  border-radius: 8px 8px 0 0; /* Rounds only the top corners */
 }
 
 ion-thumbnail {

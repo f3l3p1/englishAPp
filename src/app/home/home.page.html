@@ -1,10 +1,5 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button>
-        <ion-icon name="notifications-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
     <ion-title>Your App Name</ion-title>
     <ion-buttons slot="end">
       <ion-button routerLink="/settings">
@@ -15,6 +10,7 @@
 </ion-header>
 
 <ion-content>
+  <!-- User Profile Section -->
   <div class="user-profile" *ngIf="user">
     <img [src]="user.profilePicture || 'assets/default-profile-picture.jpg'" alt="Profile Picture" class="profile-picture" />
     <div class="user-info">
@@ -23,9 +19,10 @@
     </div>
   </div>
 
+  <!-- Statistics Grid -->
   <ion-card class="stats-card">
     <ion-card-content>
-      <div class="stats-section">
+      <div class="stats-grid">
         <div class="stat-item">
           <ion-icon name="checkmark-circle-outline"></ion-icon>
           <h3>Completed Sessions</h3>
@@ -45,22 +42,23 @@
     </ion-card-content>
   </ion-card>
 
+  <!-- Courses Section -->
   <section class="courses-section">
     <div class="section-header">
       <h2>Courses</h2>
       <a routerLink="/courses" class="view-all">Ver todas</a>
     </div>
-    <ion-slides pager="true" class="courses-scroll">
+    <ion-slides class="courses-scroll" pager="true">
       <ion-slide *ngFor="let course of courses">
         <ion-card>
-          <img [src]="course.image" alt="{{ course.name }}" />
+          <img [src]="course.image" alt="Course Image" class="course-image">
           <ion-card-header>
             <ion-card-title>{{ course.name }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
             {{ course.description }}
           </ion-card-content>
-          <ion-button expand="full" color="primary" (click)="viewCourse(course)">
+          <ion-button expand="full" color="primary" [routerLink]="['/current-course']" [queryParams]="{ course: JSON.stringify(course) }">
             Ver más
           </ion-button>
         </ion-card>
@@ -68,9 +66,10 @@
     </ion-slides>
   </section>
 
+  <!-- News Section -->
   <section class="news-section">
     <div class="section-header">
-      <h2>News</h2>
+      <h2>Novedades</h2>
       <a routerLink="/all-news" class="view-all">Ver todas</a>
     </div>
     <ion-list>

@@ -1,31 +1,46 @@
-<!-- src/app/current-course/current-course.page.html -->
+// src/app/current-course/current-course.page.ts
 
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/courses" (click)="goBack()"></ion-back-button>
-    </ion-buttons>
-    <ion-title>{{ course.name }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="goToSettings()">
-        <ion-icon name="settings-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
-<ion-content class="ion-padding">
-  <ion-card>
-    <ion-item>
-      <ion-thumbnail slot="start">
-        <img [src]="course.image" alt="{{ course.name }} Image">
-      </ion-thumbnail>
-      <ion-label>
-        <h2>{{ course.name }}</h2>
-        <p>{{ course.description }}</p>
-      </ion-label>
-    </ion-item>
-    <ion-button color="medium" (click)="goBack()">Cancelar</ion-button>
-    <ion-button color="danger" (click)="enrollCourse()">Inscribir</ion-button>
-  </ion-card>
-</ion-content>
+interface Course {
+  name: string;
+  description: string;
+  enrolled: number;
+  image: string;
+}
+
+@Component({
+  selector: 'app-current-course',
+  templateUrl: './current-course.page.html',
+  styleUrls: ['./current-course.page.scss'],
+})
+export class CurrentCoursePage implements OnInit {
+  course!: Course; // Using the non-null assertion operator to assure TypeScript the variable will be initialized
+
+  constructor(private route: ActivatedRoute, private router: Router) {}
+
+  ngOnInit() {
+    // Parse the course data from the query parameters
+    const courseData = this.route.snapshot.queryParamMap.get('course');
+    if (courseData) {
+      this.course = JSON.parse(courseData);
+    }
+  }
+
+  goBack() {
+    // Navigate back to the previous page
+    this.router.navigate(['/courses']);
+  }
+
+  goToSettings() {
+    // Navigate to the settings page
+    this.router.navigate(['/settings']);
+  }
+
+  enrollCourse() {
+    // Perform enrollment logic here
+    console.log(`Enrolling in course: ${this.course.name}`);
+    // Optionally, navigate to a confirmation page or display a success message
+  }
+}

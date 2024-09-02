@@ -1,7 +1,8 @@
-<!-- src/app/courses/courses.component.html -->
-
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
     <ion-title>Cursos Disponibles</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -11,7 +12,7 @@
     <ion-card *ngFor="let course of courses">
       <ion-item>
         <ion-thumbnail slot="start">
-          <img [src]="course.image" />
+          <img [src]="course.image" alt="{{ course.name }} Image" />
         </ion-thumbnail>
         <ion-label>
           <h2>{{ course.name }}</h2>
@@ -19,7 +20,7 @@
           <ion-note slot="end">{{ course.enrolled }} matriculados</ion-note>
         </ion-label>
       </ion-item>
-      <ion-button expand="full" color="primary" fill="clear" (click)="viewCourse(course)">
+      <ion-button expand="full" color="primary" [routerLink]="['/current-course']" [queryParams]="{ course: JSON.stringify(course) }">
         Ver más
       </ion-button>
     </ion-card>
