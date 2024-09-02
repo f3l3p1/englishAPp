@@ -15,7 +15,7 @@
 </ion-header>
 
 <ion-content>
-  <div class="user-profile" *ngIf="user"> <!-- Only show if user is defined -->
+  <div class="user-profile" *ngIf="user">
     <img [src]="user.profilePicture || 'assets/default-profile-picture.jpg'" alt="Profile Picture" class="profile-picture" />
     <div class="user-info">
       <h2>{{ user.name }}</h2>
@@ -29,7 +29,7 @@
         <div class="stat-item">
           <ion-icon name="checkmark-circle-outline"></ion-icon>
           <h3>Completed Sessions</h3>
-          <p>{{ user.completedSessions || 0 }}</p> <!-- Assuming you have these stats -->
+          <p>{{ user.completedSessions || 0 }}</p>
         </div>
         <div class="stat-item">
           <ion-icon name="checkmark-done-outline"></ion-icon>
@@ -48,25 +48,46 @@
   <section class="courses-section">
     <div class="section-header">
       <h2>Courses</h2>
-      <a routerLink="/all-courses" class="view-all">Ver todas</a> <!-- Link to view all courses -->
+      <a routerLink="/courses" class="view-all">Ver todas</a>
     </div>
-    <div class="courses-scroll">
-      <div class="course-item">Course 1</div>
-      <div class="course-item">Course 2</div>
-      <div class="course-item">Course 3</div>
-      <div class="course-item">Course 4</div>
-      <div class="course-item">Course 5</div>
-    </div>
+    <ion-slides pager="true" class="courses-scroll">
+      <ion-slide *ngFor="let course of courses">
+        <ion-card>
+          <img [src]="course.image" alt="{{ course.name }}" />
+          <ion-card-header>
+            <ion-card-title>{{ course.name }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            {{ course.description }}
+          </ion-card-content>
+          <ion-button expand="full" color="primary" (click)="viewCourse(course)">
+            Ver más
+          </ion-button>
+        </ion-card>
+      </ion-slide>
+    </ion-slides>
   </section>
 
   <section class="news-section">
     <div class="section-header">
       <h2>News</h2>
-      <a routerLink="/all-news" class="view-all">Ver todas</a> <!-- Link to view all news -->
+      <a routerLink="/all-news" class="view-all">Ver todas</a>
     </div>
-    <p>Latest updates and news related to the organization will be posted here.</p>
+    <ion-list>
+      <ion-item *ngFor="let newsItem of news">
+        <ion-thumbnail slot="start">
+          <img [src]="newsItem.image" alt="News Image">
+        </ion-thumbnail>
+        <ion-label>
+          <h3>{{ newsItem.title }}</h3>
+          <p>{{ newsItem.summary }}</p>
+        </ion-label>
+        <ion-button fill="clear" routerLink="/news-detail/{{ newsItem.id }}">
+          Leer más
+        </ion-button>
+      </ion-item>
+    </ion-list>
   </section>
-
 </ion-content>
 
 <ion-footer>
@@ -75,8 +96,8 @@
       <ion-button routerLink="/home" [class.active]="isActive('home')">
         <ion-icon name="home-outline" [class.red]="isActive('home')"></ion-icon>
       </ion-button>
-      <ion-button routerLink="/user-information" [class.active]="isActive('user-information')"> <!-- Link to User Info -->
-        <ion-icon name="person-outline" [class.red]="isActive('user-information')"></ion-icon> <!-- User icon -->
+      <ion-button routerLink="/user-information" [class.active]="isActive('user-information')">
+        <ion-icon name="person-outline" [class.red]="isActive('user-information')"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
@@ -89,70 +110,3 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-footer>
-
-<style>
-  .user-profile {
-    display: flex;
-    align-items: center;
-    padding: 16px;
-  }
-
-  .profile-picture {
-    border-radius: 50%;
-    width: 80px;
-    height: 80px;
-    margin-right: 16px;
-  }
-
-  .stats-card {
-    margin: 16px;
-  }
-
-  .stats-section {
-    display: flex;
-    justify-content: space-around;
-  }
-
-  .stat-item {
-    text-align: center;
-  }
-
-  .courses-section, .news-section {
-    padding: 16px;
-  }
-
-  .section-header {
-    display: flex;
-    justify-content: space-between; /* This will push the title and link to opposite sides */
-    align-items: center; /* Aligns items vertically */
-  }
-
-  .view-all {
-    color: #007bff; /* Change to your desired link color */
-    text-decoration: none; /* Remove underline from link */
-    font-weight: bold; /* Make the link bold */
-  }
-
-  .view-all:hover {
-    text-decoration: underline; /* Add underline on hover for better UX */
-  }
-
-  .courses-scroll {
-    display: flex;
-    overflow-x: auto; /* Enables horizontal scrolling */
-    padding: 16px;
-  }
-
-  .course-item {
-    display: inline-block;
-    padding: 8px;
-    margin-right: 10px;
-    background-color: #f0f0f0;
-    border-radius: 8px;
-  }
-
-  .red {
-    color: red; /* Color for active icon */
-  }
-</style>
-

@@ -1,0 +1,27 @@
+<!-- src/app/courses/courses.component.html -->
+
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Cursos Disponibles</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-card *ngFor="let course of courses">
+      <ion-item>
+        <ion-thumbnail slot="start">
+          <img [src]="course.image" />
+        </ion-thumbnail>
+        <ion-label>
+          <h2>{{ course.name }}</h2>
+          <p>{{ course.description }}</p>
+          <ion-note slot="end">{{ course.enrolled }} matriculados</ion-note>
+        </ion-label>
+      </ion-item>
+      <ion-button expand="full" color="primary" fill="clear" (click)="viewCourse(course)">
+        Ver más
+      </ion-button>
+    </ion-card>
+  </ion-list>
+</ion-content>

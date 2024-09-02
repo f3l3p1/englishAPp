@@ -1,5 +1,9 @@
+<!-- src/app/settings/settings.page.html -->
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button> <!-- Back button added here -->
+    </ion-buttons>
     <ion-title>Settings</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="updateUserInfo()">Save</ion-button>

@@ -1,19 +1,19 @@
-import { NgModule } from '@angular/core';
+// src/app/home/home.module.ts
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular'; // Ensure IonicModule is imported
+import { RouterModule } from '@angular/router';
 import { HomePage } from './home.page';
-
-import { HomePageRoutingModule } from './home-routing.module';
-
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,
-    HomePageRoutingModule
+    IonicModule, // Importing IonicModule
+    RouterModule.forChild([{ path: '', component: HomePage }]),
   ],
-  declarations: [HomePage]
+  declarations: [HomePage],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA], // Add this to resolve issues with custom elements
 })
 export class HomePageModule {}
