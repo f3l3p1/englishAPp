@@ -1,4 +1,5 @@
 // src/app/courses/courses.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -12,7 +13,7 @@ interface Course {
 @Component({
   selector: 'app-courses',
   templateUrl: './courses.component.html',
-  styleUrls: ['./courses.component.scss'],
+  styleUrls: ['./courses.component.scss']
 })
 export class CoursesComponent implements OnInit {
   courses: Course[] = [
@@ -44,13 +45,11 @@ export class CoursesComponent implements OnInit {
 
   constructor(private router: Router) {}
 
-  ngOnInit() {}
+  ngOnInit(): void {}
 
-  // Method to navigate to the current course page with query parameters
-  navigateToCourse(course: Course) {
-    const courseParam = JSON.stringify(course);
-    this.router.navigate(['/current-course'], {
-      queryParams: { course: courseParam },
-    });
+  // Method to handle viewing a course
+  viewCourse(course: Course) {
+    // Navigate to the current-course page with the course data as a query parameter
+    this.router.navigate(['/current-course'], { queryParams: { course: JSON.stringify(course) } });
   }
 }

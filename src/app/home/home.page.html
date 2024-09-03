@@ -58,7 +58,7 @@
           <ion-card-content>
             {{ course.description }}
           </ion-card-content>
-          <ion-button expand="full" color="primary" [routerLink]="['/current-course']" [queryParams]="{ course: JSON.stringify(course) }">
+          <ion-button expand="full" color="primary" (click)="viewCourse(course)">
             Ver más
           </ion-button>
         </ion-card>

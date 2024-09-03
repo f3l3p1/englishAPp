@@ -20,7 +20,7 @@
           <ion-note slot="end">{{ course.enrolled }} matriculados</ion-note>
         </ion-label>
       </ion-item>
-      <ion-button expand="full" color="primary" [routerLink]="['/current-course']" [queryParams]="{ course: JSON.stringify(course) }">
+      <ion-button expand="full" color="primary" (click)="viewCourse(course)">
         Ver más
       </ion-button>
     </ion-card>

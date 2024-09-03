@@ -1,80 +1,155 @@
 const express = require('express');
 const router = express.Router();
+const mysql = require('mysql2/promise'); // Use mysql2 with promise support
 
-let users = []; // Almacenamiento temporal en memoria
-let lessons = []; // Almacenamiento temporal en memoria
-
-// CRUD para Usuarios
-
-// Crear un nuevo usuario
-router.post('/users', (req, res) => {
-    const user = req.body;
-    users.push(user);
-    res.status(201).json(user);
+// Configure MySQL connection using environment variables
+const db = mysql.createPool({
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASS || 'your_password', // Replace with actual password
+    database: process.env.DB_NAME || 'your_database_name' // Replace with actual database name
 });
 
-// Leer todos los usuarios
-router.get('/users', (req, res) => {
-    res.json(users);
+// CRUD for Users
+
+// Create a new user
+router.post('/users', async (req, res) => {
+    const { nombre, nombreUsuario, correo, contrasena } = req.body;
+    try {
+        const [result] = await db.query(
+            'INSERT INTO Usuarios (nombre, nombreUsuario, correo, contrasena, fechaRegistro) VALUES (?, ?, ?, ?, NOW())',
+            [nombre, nombreUsuario, correo, contrasena]
+        );
+        res.status(201).json({ id: result.insertId, ...req.body });
+    } catch (err) {
+        console.error('Error creating user:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
 });
 
-// Leer un usuario por ID
-router.get('/users/:id', (req, res) => {
-    const user = users.find(u => u.id === parseInt(req.params.id));
-    if (!user) return res.status(404).send('Usuario no encontrado');
-    res.json(user);
+// Read all users
+router.get('/users', async (req, res) => {
+    try {
+        const [users] = await db.query('SELECT * FROM Usuarios');
+        res.json(users);
+    } catch (err) {
+        console.error('Error fetching users:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
 });
 
-// Actualizar un usuario por ID
-router.put('/users/:id', (req, res) => {
-    const user = users.find(u => u.id === parseInt(req.params.id));
-    if (!user) return res.status(404).send('Usuario no encontrado');
-
-    Object.assign(user, req.body);
-    res.json(user);
+// Read a user by ID
+router.get('/users/:id', async (req, res) => {
+    const userId = req.params.id;
+    try {
+        const [users] = await db.query('SELECT * FROM Usuarios WHERE usuarioID = ?', [userId]);
+        if (users.length === 0) return res.status(404).send('User not found');
+        res.json(users[0]);
+    } catch (err) {
+        console.error('Error fetching user:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
 });
 
-// Eliminar un usuario por ID
-router.delete('/users/:id', (req, res) => {
-    users = users.filter(u => u.id !== parseInt(req.params.id));
-    res.status(204).send();
+// Update a user by ID
+router.put('/users/:id', async (req, res) => {
+    const userId = req.params.id;
+    const { nombre, nombreUsuario, correo, contrasena } = req.body;
+    try {
+        const [result] = await db.query(
+            'UPDATE Usuarios SET nombre = ?, nombreUsuario = ?, correo = ?, contrasena = ? WHERE usuarioID = ?',
+            [nombre, nombreUsuario, correo, contrasena, userId]
+        );
+        if (result.affectedRows === 0) return res.status(404).send('User not found');
+        res.json({ message: 'User updated successfully' });
+    } catch (err) {
+        console.error('Error updating user:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
 });
 
-// CRUD para Lecciones
-
-// Crear una nueva lección
-router.post('/lessons', (req, res) => {
-    const lesson = req.body;
-    lessons.push(lesson);
-    res.status(201).json(lesson);
+// Delete a user by ID
+router.delete('/users/:id', async (req, res) => {
+    const userId = req.params.id;
+    try {
+        const [result] = await db.query('DELETE FROM Usuarios WHERE usuarioID = ?', [userId]);
+        if (result.affectedRows === 0) return res.status(404).send('User not found');
+        res.status(204).send();
+    } catch (err) {
+        console.error('Error deleting user:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
 });
 
-// Leer todas las lecciones
-router.get('/lessons', (req, res) => {
-    res.json(lessons);
+// CRUD for Lessons
+
+// Create a new lesson
+router.post('/lessons', async (req, res) => {
+    const { titulo, descripcion } = req.body; // Example fields
+    try {
+        const [result] = await db.query(
+            'INSERT INTO Lecciones (titulo, descripcion, fechaCreacion) VALUES (?, ?, NOW())',
+            [titulo, descripcion]
+        );
+        res.status(201).json({ id: result.insertId, ...req.body });
+    } catch (err) {
+        console.error('Error creating lesson:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
 });
 
-// Leer una lección por ID
-router.get('/lessons/:id', (req, res) => {
-    const lesson = lessons.find(l => l.id === parseInt(req.params.id));
-    if (!lesson) return res.status(404).send('Lección no encontrada');
-    res.json(lesson);
+// Read all lessons
+router.get('/lessons', async (req, res) => {
+    try {
+        const [lessons] = await db.query('SELECT * FROM Lecciones');
+        res.json(lessons);
+    } catch (err) {
+        console.error('Error fetching lessons:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
 });
 
-// Actualizar una lección por ID
-router.put('/lessons/:id', (req, res) => {
-    const lesson = lessons.find(l => l.id === parseInt(req.params.id));
-    if (!lesson) return res.status(404).send('Lección no encontrada');
-
-    Object.assign(lesson, req.body);
-    res.json(lesson);
+// Read a lesson by ID
+router.get('/lessons/:id', async (req, res) => {
+    const lessonId = req.params.id;
+    try {
+        const [lessons] = await db.query('SELECT * FROM Lecciones WHERE leccionID = ?', [lessonId]);
+        if (lessons.length === 0) return res.status(404).send('Lesson not found');
+        res.json(lessons[0]);
+    } catch (err) {
+        console.error('Error fetching lesson:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
 });
 
-// Eliminar una lección por ID
-router.delete('/lessons/:id', (req, res) => {
-    lessons = lessons.filter(l => l.id !== parseInt(req.params.id));
-    res.status(204).send();
+// Update a lesson by ID
+router.put('/lessons/:id', async (req, res) => {
+    const lessonId = req.params.id;
+    const { titulo, descripcion } = req.body;
+    try {
+        const [result] = await db.query(
+            'UPDATE Lecciones SET titulo = ?, descripcion = ? WHERE leccionID = ?',
+            [titulo, descripcion, lessonId]
+        );
+        if (result.affectedRows === 0) return res.status(404).send('Lesson not found');
+        res.json({ message: 'Lesson updated successfully' });
+    } catch (err) {
+        console.error('Error updating lesson:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
+});
+
+// Delete a lesson by ID
+router.delete('/lessons/:id', async (req, res) => {
+    const lessonId = req.params.id;
+    try {
+        const [result] = await db.query('DELETE FROM Lecciones WHERE leccionID = ?', [lessonId]);
+        if (result.affectedRows === 0) return res.status(404).send('Lesson not found');
+        res.status(204).send();
+    } catch (err) {
+        console.error('Error deleting lesson:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
 });
 
 module.exports = router;
-s

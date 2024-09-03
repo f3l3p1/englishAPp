@@ -90,6 +90,7 @@ export class HomePage implements OnInit {
 
   // Method to handle viewing a course
   viewCourse(course: Course) {
+    // Navigate to the current-course page with the course data passed as a query parameter
     this.router.navigate(['/current-course'], { queryParams: { course: JSON.stringify(course) } });
   }
 }

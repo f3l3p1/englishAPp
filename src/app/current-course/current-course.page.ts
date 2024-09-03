@@ -16,7 +16,7 @@ interface Course {
   styleUrls: ['./current-course.page.scss'],
 })
 export class CurrentCoursePage implements OnInit {
-  course!: Course; // Using the non-null assertion operator to assure TypeScript the variable will be initialized
+  course: Course | null = null; // Initialize as null to handle cases where the course data is not available
 
   constructor(private route: ActivatedRoute, private router: Router) {}
 
@@ -24,7 +24,12 @@ export class CurrentCoursePage implements OnInit {
     // Parse the course data from the query parameters
     const courseData = this.route.snapshot.queryParamMap.get('course');
     if (courseData) {
-      this.course = JSON.parse(courseData);
+      try {
+        this.course = JSON.parse(courseData);
+      } catch (error) {
+        console.error('Failed to parse course data:', error);
+        this.course = null;
+      }
     }
   }
 
@@ -40,7 +45,9 @@ export class CurrentCoursePage implements OnInit {
 
   enrollCourse() {
     // Perform enrollment logic here
-    console.log(`Enrolling in course: ${this.course.name}`);
-    // Optionally, navigate to a confirmation page or display a success message
+    if (this.course) {
+      console.log(`Enrolling in course: ${this.course.name}`);
+      // Optionally, navigate to a confirmation page or display a success message
+    }
   }
 }
