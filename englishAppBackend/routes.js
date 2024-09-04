@@ -5,9 +5,9 @@ const mysql = require('mysql2/promise'); // Use mysql2 with promise support
 // Configure MySQL connection using environment variables
 const db = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASS || 'your_password', // Replace with actual password
-    database: process.env.DB_NAME || 'your_database_name' // Replace with actual database name
+    user: process.env.DB_USER || 'new_user',
+    password: process.env.DB_PASS || 'new_password', // Replace with actual password
+    database: process.env.DB_NAME || 'englishApp' // Replace with actual database name
 });
 
 // CRUD for Users

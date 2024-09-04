@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { NavController } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { NgForm } from '@angular/forms';
 import { AuthenticationService } from '../services/authentication.service';
 
 @Component({
@@ -14,24 +15,29 @@ export class RegisterPage {
   password: string = '';
   confirmPassword: string = '';
 
-  constructor(private navCtrl: NavController, private authService: AuthenticationService) {}
+  constructor(private authService: AuthenticationService, private router: Router) {}
 
-  async onRegister() {
+  // Method to handle user registration
+  register(form: NgForm) {
     if (this.password !== this.confirmPassword) {
-      alert("Passwords do not match!");
+      alert('Passwords do not match');
       return;
     }
 
-    const isRegistered = await this.authService.register(this.name, this.username, this.email, this.password);
-    if (isRegistered) {
-      alert('Registration successful! You can now log in.');
-      this.navCtrl.navigateBack('/login');
-    } else {
-      alert('Registration failed. Please try again.');
-    }
+    this.authService.register(this.name, this.username, this.email, this.password).then((result) => {
+      if (result === true) {
+        alert('Registration successful! You can now log in.');
+        this.router.navigate(['/login']);
+      } else {
+        alert(result); // Display any error messages
+      }
+    }).catch((error) => {
+      console.error('Registration error:', error);
+    });
   }
 
+  // Method to navigate to the login page
   navigateToLogin() {
-    this.navCtrl.navigateBack('/login');
+    this.router.navigate(['/login']);
   }
 }

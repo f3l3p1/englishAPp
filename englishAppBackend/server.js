@@ -26,9 +26,9 @@ app.use(bodyParser.json());
 // Configure MySQL connection using environment variables
 const db = mysql.createConnection({
     host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASS || 'your_password', // Replace 'your_password' with the actual password
-    database: process.env.DB_NAME || 'your_database_name' // Replace 'your_database_name' with the actual database name
+    user: process.env.DB_USER || 'new_user',
+    password: process.env.DB_PASS || 'new_password', // Replace 'your_password' with the actual password
+    database: process.env.DB_NAME || 'englishApp' // Replace 'your_database_name' with the actual database name
 });
 
 // Connect to the MySQL database
@@ -41,7 +41,7 @@ db.connect((err) => {
 });
 
 // Import Routes
-const routes = require('./routes'); // Correct path to your route.js file
+const routes = require('./routes'); // Correct path to your routes.js file
 app.use('/api', routes); // Set the base path for the routes
 
 // Endpoint for user login
