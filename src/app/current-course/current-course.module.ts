@@ -1,9 +1,9 @@
+// src/app/current-course/current-course.module.ts
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
-
+import { CurrentCoursePageRoutingModule } from './current-course-routing.module';
 import { CurrentCoursePage } from './current-course.page';
 
 @NgModule({
@@ -11,7 +11,7 @@ import { CurrentCoursePage } from './current-course.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild([{ path: '', component: CurrentCoursePage }])
+    CurrentCoursePageRoutingModule
   ],
   declarations: [CurrentCoursePage]
 })

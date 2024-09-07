@@ -8,7 +8,7 @@ import { AuthenticationService } from '../services/authentication.service';
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
 })
-export class RegisterPage {
+export class RegisterPage {  // Asegúrate de que esta línea esté presente
   name: string = '';
   username: string = '';
   email: string = '';
@@ -17,26 +17,28 @@ export class RegisterPage {
 
   constructor(private authService: AuthenticationService, private router: Router) {}
 
-  // Method to handle user registration
+  // Método para manejar el registro del usuario
   register(form: NgForm) {
     if (this.password !== this.confirmPassword) {
       alert('Passwords do not match');
       return;
     }
 
-    this.authService.register(this.name, this.username, this.email, this.password).then((result) => {
-      if (result === true) {
-        alert('Registration successful! You can now log in.');
-        this.router.navigate(['/login']);
-      } else {
-        alert(result); // Display any error messages
-      }
-    }).catch((error) => {
-      console.error('Registration error:', error);
-    });
+    this.authService.register(this.name, this.username, this.email, this.password)
+      .then((result: boolean | string) => {
+        if (result === true) {
+          alert('Registration successful! You can now log in.');
+          this.router.navigate(['/login']);
+        } else {
+          alert(result); // Mostrar cualquier mensaje de error
+        }
+      })
+      .catch((error: any) => {
+        console.error('Registration error:', error);
+      });
   }
 
-  // Method to navigate to the login page
+  // Método para navegar a la página de inicio de sesión
   navigateToLogin() {
     this.router.navigate(['/login']);
   }

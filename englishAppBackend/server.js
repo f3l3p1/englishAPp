@@ -4,9 +4,8 @@ const mysql = require('mysql2'); // Use mysql2 for better compatibility with MyS
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
-const crypto = require('crypto');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 require('dotenv').config(); // Load environment variables from .env file
 
 // Initialize Express app
@@ -23,12 +22,23 @@ app.use(cors({
 // Use body-parser to parse incoming JSON requests
 app.use(bodyParser.json());
 
+// Use cookie-parser
+app.use(cookieParser());
+
+// Configure sessions
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'your_secret_key', // Use a strong secret key
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false } // Set to true if using https
+}));
+
 // Configure MySQL connection using environment variables
 const db = mysql.createConnection({
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'new_user',
-    password: process.env.DB_PASS || 'new_password', // Replace 'your_password' with the actual password
-    database: process.env.DB_NAME || 'englishApp' // Replace 'your_database_name' with the actual database name
+    password: process.env.DB_PASS || 'new_password', // Replace with the actual password
+    database: process.env.DB_NAME || 'englishApp' // Replace with the actual database name
 });
 
 // Connect to the MySQL database
@@ -68,8 +78,10 @@ app.post('/login', (req, res) => {
                 return res.status(401).json({ error: 'Invalid credentials' });
             }
 
-            const token = jwt.sign({ id: user.usuarioID }, process.env.JWT_SECRET, { expiresIn: '1h' });
-            res.status(200).json({ token, user });
+            // Save user info in the session
+            req.session.userId = user.usuarioID;
+            req.session.userName = user.nombre;
+            res.status(200).json({ message: 'Login successful', user });
         } catch (error) {
             console.error('Error during password comparison:', error);
             res.status(500).json({ error: 'Internal server error' });
@@ -77,60 +89,30 @@ app.post('/login', (req, res) => {
     });
 });
 
-// Endpoint for sending recovery email
-app.post('/send-recovery-email', async (req, res) => {
-    const { correo } = req.body;
-
-    // Check if the user exists in the database
-    const sql = 'SELECT * FROM Usuarios WHERE correo = ?';
-    db.query(sql, [correo], async (err, results) => {
+// Endpoint for logout
+app.post('/logout', (req, res) => {
+    req.session.destroy((err) => {
         if (err) {
-            console.error('Database error during email check:', err);
-            return res.status(500).json({ error: 'Database error' });
+            console.error('Error logging out:', err);
+            return res.status(500).json({ error: 'Logout failed' });
         }
-        if (results.length === 0) {
-            return res.status(404).json({ error: 'No account found with that email address.' });
-        }
-
-        const user = results[0];
-        const token = crypto.randomBytes(20).toString('hex');
-        const tokenExpiry = Date.now() + 3600000; // 1 hour expiry
-
-        // Store the token and expiry in the database
-        const updateSql = 'UPDATE Usuarios SET resetPasswordToken = ?, resetPasswordExpires = ? WHERE correo = ?';
-        db.query(updateSql, [token, tokenExpiry, correo], (err, result) => {
-            if (err) {
-                console.error('Error updating reset token:', err);
-                return res.status(500).json({ error: 'Database error' });
-            }
-
-            // Set up Nodemailer transporter
-            const transporter = nodemailer.createTransport({
-                service: 'Gmail', // Use your email provider
-                auth: {
-                    user: process.env.EMAIL_USER, // Your email address
-                    pass: process.env.EMAIL_PASS // Your email password or app password
-                }
-            });
-
-            // Prepare the email options
-            const mailOptions = {
-                from: process.env.EMAIL_USER,
-                to: correo,
-                subject: 'Password Recovery',
-                text: `Click here to reset your password: http://localhost:4200/reset-password/${token}` // Replace with actual reset link
-            };
-
-            // Send the email
-            transporter.sendMail(mailOptions, (error, info) => {
-                if (error) {
-                    console.error('Error sending recovery email:', error);
-                    return res.status(500).json({ error: 'Error sending recovery email.' });
-                }
-                res.status(200).json({ message: 'Recovery email sent! Please check your inbox.' });
-            });
-        });
+        res.clearCookie('connect.sid'); // Clear session cookie
+        res.status(200).json({ message: 'Logged out successfully' });
     });
+});
+
+// Middleware to protect routes
+function ensureAuthenticated(req, res, next) {
+    if (req.session.userId) {
+        return next();
+    } else {
+        res.status(401).json({ error: 'Unauthorized' });
+    }
+}
+
+// Example of a protected route
+app.get('/api/protected', ensureAuthenticated, (req, res) => {
+    res.json({ message: 'This is a protected route', user: req.session.userName });
 });
 
 // Start the server

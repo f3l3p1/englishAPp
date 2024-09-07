@@ -1,50 +1,51 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { User } from '../models/user.model'; // Adjust the path if necessary
-import { jwtDecode } from 'jwt-decode'; // Correctly imported jwt-decode
+import { User } from '../models/user.model'; // Ensure the path is correct
+import { throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthenticationService {
-  private apiUrl = 'http://localhost:3000'; // Your backend API URL
+  private apiUrl = 'http://localhost:3000/api'; // Ensure this matches your backend API URL
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  login(email: string, password: string): Promise<boolean> {
-    return this.http.post<{ token: string; user: User }>(`${this.apiUrl}/login`, { email, password })
-      .toPromise()
-      .then(response => {
-        if (response && response.token) {
-          const token = response.token;
-          const decodedToken: any = jwtDecode(token);
-          const tokenExpiry = decodedToken?.exp ? decodedToken.exp * 1000 : 0;
+  async login(email: string, password: string): Promise<boolean> {
+    try {
+      const response = await this.http.post<{ token: string; user: User }>(
+        `${this.apiUrl}/login`, 
+        { correo: email, contrasena: password }
+      ).toPromise();
 
-          if (tokenExpiry && tokenExpiry < Date.now()) {
-            return false; // Token has expired
-          }
-
-          localStorage.setItem('token', token);
-          localStorage.setItem('currentUser', JSON.stringify(response.user));
-          return true;
-        }
-        return false; // Handle the case where response is undefined
-      })
-      .catch(error => {
-        console.error('Login error', error);
-        return false;
-      });
+      if (response && response.token) {
+        const token = response.token;
+        localStorage.setItem('token', token);
+        localStorage.setItem('currentUser', JSON.stringify(response.user));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Login error', error);
+      return false;
+    }
   }
 
-  register(name: string, username: string, email: string, password: string): Promise<boolean | string> {
-    return this.http.post(`${this.apiUrl}/register`, { name, username, email, password })
-      .toPromise()
-      .then(() => true)
-      .catch((error: any) => {
-        console.error('Registration error', error);
-        return error.error?.message || 'Registration failed';
-      });
+  async register(name: string, username: string, email: string, password: string): Promise<boolean | string> {
+    try {
+      await this.http.post(`${this.apiUrl}/users`, { 
+        nombre: name, 
+        nombreUsuario: username, 
+        correo: email, 
+        contrasena: password 
+      }).toPromise();
+      return true;
+    } catch (error: any) {
+      console.error('Registration error', error);
+      return error.error?.message || 'Registration failed. Please try again.';
+    }
   }
 
   logout() {
@@ -60,21 +61,25 @@ export class AuthenticationService {
 
   updateUser(updatedUserData: any) {
     const formData = new FormData();
-
     formData.append('name', updatedUserData.name);
     formData.append('username', updatedUserData.username);
     formData.append('email', updatedUserData.email);
-
+    
     if (updatedUserData.profilePicture) {
       formData.append('profilePicture', updatedUserData.profilePicture);
     }
 
-    return this.http.post(`${this.apiUrl}/update-user`, formData);
+    return this.http.post(`${this.apiUrl}/update-user`, formData)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          console.error('Update user error', error);
+          return throwError(() => new Error('Error updating user'));
+        })
+      );
   }
 
   sendRecoveryEmail(email: string): Promise<boolean> {
-    return this.http.post(`${this.apiUrl}/send-recovery-email`, { email })
-      .toPromise()
+    return this.http.post(`${this.apiUrl}/send-recovery-email`, { correo: email }).toPromise()
       .then(() => true)
       .catch(error => {
         console.error('Error sending recovery email:', error);
@@ -83,12 +88,10 @@ export class AuthenticationService {
   }
 
   getCurrentCourse(): any | null {
-    // Implement your logic here to return the current course
-    return null; // Replace with actual implementation
+    return null;
   }
 
   getPastSessions(): any[] {
-    // Implement your logic here to return past sessions
-    return []; // Replace with actual implementation
+    return [];
   }
 }

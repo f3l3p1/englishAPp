@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { AuthenticationService } from '../services/authentication.service';
 
@@ -7,12 +7,18 @@ import { AuthenticationService } from '../services/authentication.service';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
-export class LoginPage {
+export class LoginPage implements OnInit {
   email: string = '';
   password: string = '';
   public errorMessage: string = '';
 
   constructor(private navCtrl: NavController, private authService: AuthenticationService) {}
+
+  ngOnInit() {
+    // Limpiar cualquier usuario previo al cargar la página de login
+    localStorage.removeItem('token');
+    localStorage.removeItem('currentUser');
+  }
 
   async login() {
     this.errorMessage = ''; // Clear any previous error message
@@ -34,4 +40,3 @@ export class LoginPage {
     this.navCtrl.navigateForward('/recovery');
   }
 }
-
