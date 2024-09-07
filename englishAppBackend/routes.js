@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2/promise'); // Use mysql2 with promise support
+const bcrypt = require('bcrypt'); // Import bcrypt for hashing passwords
 
 // Configure MySQL connection using environment variables
 const db = mysql.createPool({
@@ -16,9 +17,11 @@ const db = mysql.createPool({
 router.post('/users', async (req, res) => {
     const { nombre, nombreUsuario, correo, contrasena } = req.body;
     try {
+        // Hash the password before storing it in the database
+        const hashedPassword = await bcrypt.hash(contrasena, 10); // 10 is the salt rounds
         const [result] = await db.query(
             'INSERT INTO Usuarios (nombre, nombreUsuario, correo, contrasena, fechaRegistro) VALUES (?, ?, ?, ?, NOW())',
-            [nombre, nombreUsuario, correo, contrasena]
+            [nombre, nombreUsuario, correo, hashedPassword]
         );
         res.status(201).json({ id: result.insertId, ...req.body });
     } catch (err) {
@@ -56,9 +59,14 @@ router.put('/users/:id', async (req, res) => {
     const userId = req.params.id;
     const { nombre, nombreUsuario, correo, contrasena } = req.body;
     try {
+        // Hash the password before updating if provided
+        let hashedPassword = contrasena;
+        if (contrasena) {
+            hashedPassword = await bcrypt.hash(contrasena, 10);
+        }
         const [result] = await db.query(
             'UPDATE Usuarios SET nombre = ?, nombreUsuario = ?, correo = ?, contrasena = ? WHERE usuarioID = ?',
-            [nombre, nombreUsuario, correo, contrasena, userId]
+            [nombre, nombreUsuario, correo, hashedPassword, userId]
         );
         if (result.affectedRows === 0) return res.status(404).send('User not found');
         res.json({ message: 'User updated successfully' });

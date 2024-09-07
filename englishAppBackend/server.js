@@ -72,6 +72,7 @@ app.post('/login', (req, res) => {
         const user = results[0];
 
         try {
+            // Use bcrypt.compare to validate the password
             const isPasswordValid = await bcrypt.compare(contrasena, user.contrasena);
 
             if (!isPasswordValid) {
@@ -81,7 +82,13 @@ app.post('/login', (req, res) => {
             // Save user info in the session
             req.session.userId = user.usuarioID;
             req.session.userName = user.nombre;
-            res.status(200).json({ message: 'Login successful', user });
+            req.session.save((err) => {
+                if (err) {
+                    console.error('Error saving session:', err);
+                    return res.status(500).json({ error: 'Internal server error' });
+                }
+                res.status(200).json({ message: 'Login successful', user });
+            });
         } catch (error) {
             console.error('Error during password comparison:', error);
             res.status(500).json({ error: 'Internal server error' });
