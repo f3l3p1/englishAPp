@@ -55,7 +55,7 @@ const routes = require('./routes'); // Correct path to your routes.js file
 app.use('/api', routes); // Set the base path for the routes
 
 // Endpoint for user login
-app.post('/login', (req, res) => {
+app.post('/api/login', (req, res) => {
     console.log('Login request received:', req.body);
     const { correo, contrasena } = req.body;
     const sql = 'SELECT * FROM Usuarios WHERE correo = ?';
