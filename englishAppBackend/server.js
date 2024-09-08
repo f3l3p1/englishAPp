@@ -37,8 +37,9 @@ app.use(session({
 const db = mysql.createConnection({
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'new_user',
-    password: process.env.DB_PASS || 'new_password', // Replace with the actual password
-    database: process.env.DB_NAME || 'englishApp' // Replace with the actual database name
+    password: process.env.DB_PASS || 'new_password', // Added the missing comma
+    database: process.env.DB_NAME || 'englishApp',
+    port: 3306
 });
 
 // Connect to the MySQL database
@@ -60,7 +61,7 @@ app.post('/api/login', (req, res) => {
     const { correo, contrasena } = req.body;
     const sql = 'SELECT * FROM Usuarios WHERE correo = ?';
 
-    db.query(sql, [correo], async (err, results) => {
+    db.query(sql, [correo.trim()], async (err, results) => { // Trim input to avoid whitespace issues
         if (err) {
             console.error('Database error during checking:', err);
             return res.status(500).json({ error: 'Database error' });

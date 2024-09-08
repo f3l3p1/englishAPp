@@ -17,8 +17,8 @@ const db = mysql.createPool({
 router.post('/users', async (req, res) => {
     const { nombre, nombreUsuario, correo, contrasena } = req.body;
     try {
-        // Hash the password before storing it in the database
-        const hashedPassword = await bcrypt.hash(contrasena, 10); // 10 is the salt rounds
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(contrasena, 10);
         const [result] = await db.query(
             'INSERT INTO Usuarios (nombre, nombreUsuario, correo, contrasena, fechaRegistro) VALUES (?, ?, ?, ?, NOW())',
             [nombre, nombreUsuario, correo, hashedPassword]
