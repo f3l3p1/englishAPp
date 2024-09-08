@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { AuthenticationService } from '../services/authentication.service'; // Adjust path as necessary
+import { AuthenticationService } from '../services/authentication.service';
 
 @Component({
   selector: 'app-recovery',

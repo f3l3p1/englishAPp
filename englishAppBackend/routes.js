@@ -1,14 +1,16 @@
+// routes.js
+
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql2/promise'); // Use mysql2 with promise support
-const bcrypt = require('bcrypt'); // Import bcrypt for hashing passwords
+const mysql = require('mysql2/promise');
+const bcrypt = require('bcrypt');
 
 // Configure MySQL connection using environment variables
 const db = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'new_user',
-    password: process.env.DB_PASS || 'new_password', // Replace with actual password
-    database: process.env.DB_NAME || 'englishApp' // Replace with actual database name
+    password: process.env.DB_PASS || 'new_password',
+    database: process.env.DB_NAME || 'englishApp'
 });
 
 // CRUD for Users
@@ -46,7 +48,7 @@ router.get('/users/:id', async (req, res) => {
     const userId = req.params.id;
     try {
         const [users] = await db.query('SELECT * FROM Usuarios WHERE usuarioID = ?', [userId]);
-        if (users.length === 0) return res.status(404).send('User not found');
+        if (users.length === 0) return res.status(404).json({ error: 'User not found' });
         res.json(users[0]);
     } catch (err) {
         console.error('Error fetching user:', err);
@@ -59,7 +61,6 @@ router.put('/users/:id', async (req, res) => {
     const userId = req.params.id;
     const { nombre, nombreUsuario, correo, contrasena } = req.body;
     try {
-        // Hash the password before updating if provided
         let hashedPassword = contrasena;
         if (contrasena) {
             hashedPassword = await bcrypt.hash(contrasena, 10);
@@ -68,7 +69,7 @@ router.put('/users/:id', async (req, res) => {
             'UPDATE Usuarios SET nombre = ?, nombreUsuario = ?, correo = ?, contrasena = ? WHERE usuarioID = ?',
             [nombre, nombreUsuario, correo, hashedPassword, userId]
         );
-        if (result.affectedRows === 0) return res.status(404).send('User not found');
+        if (result.affectedRows === 0) return res.status(404).json({ error: 'User not found' });
         res.json({ message: 'User updated successfully' });
     } catch (err) {
         console.error('Error updating user:', err);
@@ -81,7 +82,7 @@ router.delete('/users/:id', async (req, res) => {
     const userId = req.params.id;
     try {
         const [result] = await db.query('DELETE FROM Usuarios WHERE usuarioID = ?', [userId]);
-        if (result.affectedRows === 0) return res.status(404).send('User not found');
+        if (result.affectedRows === 0) return res.status(404).json({ error: 'User not found' });
         res.status(204).send();
     } catch (err) {
         console.error('Error deleting user:', err);
@@ -93,7 +94,7 @@ router.delete('/users/:id', async (req, res) => {
 
 // Create a new lesson
 router.post('/lessons', async (req, res) => {
-    const { titulo, descripcion } = req.body; // Example fields
+    const { titulo, descripcion } = req.body;
     try {
         const [result] = await db.query(
             'INSERT INTO Lecciones (titulo, descripcion, fechaCreacion) VALUES (?, ?, NOW())',
@@ -122,7 +123,7 @@ router.get('/lessons/:id', async (req, res) => {
     const lessonId = req.params.id;
     try {
         const [lessons] = await db.query('SELECT * FROM Lecciones WHERE leccionID = ?', [lessonId]);
-        if (lessons.length === 0) return res.status(404).send('Lesson not found');
+        if (lessons.length === 0) return res.status(404).json({ error: 'Lesson not found' });
         res.json(lessons[0]);
     } catch (err) {
         console.error('Error fetching lesson:', err);
@@ -139,7 +140,7 @@ router.put('/lessons/:id', async (req, res) => {
             'UPDATE Lecciones SET titulo = ?, descripcion = ? WHERE leccionID = ?',
             [titulo, descripcion, lessonId]
         );
-        if (result.affectedRows === 0) return res.status(404).send('Lesson not found');
+        if (result.affectedRows === 0) return res.status(404).json({ error: 'Lesson not found' });
         res.json({ message: 'Lesson updated successfully' });
     } catch (err) {
         console.error('Error updating lesson:', err);
@@ -152,7 +153,7 @@ router.delete('/lessons/:id', async (req, res) => {
     const lessonId = req.params.id;
     try {
         const [result] = await db.query('DELETE FROM Lecciones WHERE leccionID = ?', [lessonId]);
-        if (result.affectedRows === 0) return res.status(404).send('Lesson not found');
+        if (result.affectedRows === 0) return res.status(404).json({ error: 'Lesson not found' });
         res.status(204).send();
     } catch (err) {
         console.error('Error deleting lesson:', err);

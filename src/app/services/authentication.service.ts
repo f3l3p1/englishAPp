@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { User } from '../models/user.model'; // Ensure the path is correct
+import { User } from '../models/user.model';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -9,9 +9,15 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class AuthenticationService {
-  private apiUrl = 'http://localhost:3000/api'; // Ensure this matches your backend API URL
+  private apiUrl = 'http://localhost:3000/api'; // Ensure this URL matches your backend API URL
 
   constructor(private http: HttpClient, private router: Router) {}
+
+  // Method to add JWT token to headers
+  private getHeaders() {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  }
 
   async login(email: string, password: string): Promise<boolean> {
     try {
@@ -69,7 +75,7 @@ export class AuthenticationService {
       formData.append('profilePicture', updatedUserData.profilePicture);
     }
 
-    return this.http.post(`${this.apiUrl}/update-user`, formData)
+    return this.http.post(`${this.apiUrl}/update-user`, formData, { headers: this.getHeaders() })
       .pipe(
         catchError((error: HttpErrorResponse) => {
           console.error('Update user error', error);
@@ -79,7 +85,7 @@ export class AuthenticationService {
   }
 
   sendRecoveryEmail(email: string): Promise<boolean> {
-    return this.http.post(`${this.apiUrl}/send-recovery-email`, { correo: email }).toPromise()
+    return this.http.post(`${this.apiUrl}/send-recovery-email`, { correo: email }, { headers: this.getHeaders() }).toPromise()
       .then(() => true)
       .catch(error => {
         console.error('Error sending recovery email:', error);

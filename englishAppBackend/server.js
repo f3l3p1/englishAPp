@@ -1,17 +1,21 @@
+// server.js
+
 // Import required modules
 const express = require('express');
-const mysql = require('mysql2'); // Use mysql2 for better compatibility with MySQL 8+
+const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-require('dotenv').config(); // Load environment variables from .env file
+const jwt = require('jsonwebtoken');
+const path = require('path');
+require('dotenv').config();
 
 // Initialize Express app
 const app = express();
 
-// Enable CORS to allow requests from the frontend (running on port 8100)
+// Enable CORS
 app.use(cors({
     origin: 'http://localhost:8100',
     methods: 'GET,POST,PUT,DELETE,OPTIONS',
@@ -19,30 +23,29 @@ app.use(cors({
     credentials: true
 }));
 
-// Use body-parser to parse incoming JSON requests
+// Use body-parser to parse JSON requests
 app.use(bodyParser.json());
-
-// Use cookie-parser
 app.use(cookieParser());
 
 // Configure sessions
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'your_secret_key', // Use a strong secret key
+    secret: process.env.SESSION_SECRET || 'your_secret_key',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false } // Set to true if using https
+    cookie: { secure: false }
 }));
 
-// Configure MySQL connection using environment variables
+// Serve static files from the 'src/assets' directory
+app.use('/assets', express.static(path.join(__dirname, 'src/assets')));
+
+// Configure MySQL connection
 const db = mysql.createConnection({
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'new_user',
-    password: process.env.DB_PASS || 'new_password', // Added the missing comma
-    database: process.env.DB_NAME || 'englishApp',
-    port: 3306
+    password: process.env.DB_PASS || 'new_password',
+    database: process.env.DB_NAME || 'englishApp'
 });
 
-// Connect to the MySQL database
 db.connect((err) => {
     if (err) {
         console.error('Error connecting to the database:', err);
@@ -51,19 +54,17 @@ db.connect((err) => {
     console.log('Connected to the MySQL database.');
 });
 
-// Import Routes
-const routes = require('./routes'); // Correct path to your routes.js file
-app.use('/api', routes); // Set the base path for the routes
+// JWT secret key
+const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || 'youraccesstokensecret';
 
-// Endpoint for user login
+// Login endpoint
 app.post('/api/login', (req, res) => {
-    console.log('Login request received:', req.body);
     const { correo, contrasena } = req.body;
     const sql = 'SELECT * FROM Usuarios WHERE correo = ?';
 
-    db.query(sql, [correo.trim()], async (err, results) => { // Trim input to avoid whitespace issues
+    db.query(sql, [correo], async (err, results) => {
         if (err) {
-            console.error('Database error during checking:', err);
+            console.error('Database error:', err);
             return res.status(500).json({ error: 'Database error' });
         }
         if (results.length === 0) {
@@ -73,23 +74,15 @@ app.post('/api/login', (req, res) => {
         const user = results[0];
 
         try {
-            // Use bcrypt.compare to validate the password
             const isPasswordValid = await bcrypt.compare(contrasena, user.contrasena);
 
             if (!isPasswordValid) {
                 return res.status(401).json({ error: 'Invalid credentials' });
             }
 
-            // Save user info in the session
-            req.session.userId = user.usuarioID;
-            req.session.userName = user.nombre;
-            req.session.save((err) => {
-                if (err) {
-                    console.error('Error saving session:', err);
-                    return res.status(500).json({ error: 'Internal server error' });
-                }
-                res.status(200).json({ message: 'Login successful', user });
-            });
+            // Generate a JWT token
+            const token = jwt.sign({ userId: user.usuarioID, nombre: user.nombre }, accessTokenSecret, { expiresIn: '1h' });
+            res.status(200).json({ message: 'Login successful', token, user });
         } catch (error) {
             console.error('Error during password comparison:', error);
             res.status(500).json({ error: 'Internal server error' });
@@ -97,31 +90,26 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-// Endpoint for logout
-app.post('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            console.error('Error logging out:', err);
-            return res.status(500).json({ error: 'Logout failed' });
-        }
-        res.clearCookie('connect.sid'); // Clear session cookie
-        res.status(200).json({ message: 'Logged out successfully' });
-    });
-});
+// Middleware to authenticate JWT
+const authenticateJWT = (req, res, next) => {
+    const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 
-// Middleware to protect routes
-function ensureAuthenticated(req, res, next) {
-    if (req.session.userId) {
-        return next();
-    } else {
-        res.status(401).json({ error: 'Unauthorized' });
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized' });
     }
-}
 
-// Example of a protected route
-app.get('/api/protected', ensureAuthenticated, (req, res) => {
-    res.json({ message: 'This is a protected route', user: req.session.userName });
-});
+    jwt.verify(token, accessTokenSecret, (err, user) => {
+        if (err) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+        req.user = user;
+        next();
+    });
+};
+
+// Use the router module for user and lesson routes
+const router = require('./routes'); // Ensure the correct path
+app.use('/api', router); // Register /api prefix for routes
 
 // Start the server
 const PORT = process.env.PORT || 3000;
