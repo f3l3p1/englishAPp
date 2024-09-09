@@ -1,9 +1,9 @@
-// routes.js
-
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
+const multer = require('multer');
+const path = require('path');
 
 // Configure MySQL connection using environment variables
 const db = mysql.createPool({
@@ -13,13 +13,24 @@ const db = mysql.createPool({
     database: process.env.DB_NAME || 'englishApp'
 });
 
+// Multer setup for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // Directory where images will be saved
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname)); // Unique filename with extension
+    }
+});
+
+const upload = multer({ storage: storage });
+
 // CRUD for Users
 
 // Create a new user
 router.post('/users', async (req, res) => {
     const { nombre, nombreUsuario, correo, contrasena } = req.body;
     try {
-        // Hash the password
         const hashedPassword = await bcrypt.hash(contrasena, 10);
         const [result] = await db.query(
             'INSERT INTO Usuarios (nombre, nombreUsuario, correo, contrasena, fechaRegistro) VALUES (?, ?, ?, ?, NOW())',
@@ -56,21 +67,35 @@ router.get('/users/:id', async (req, res) => {
     }
 });
 
-// Update a user by ID
-router.put('/users/:id', async (req, res) => {
+// Update a user by ID, including profile picture
+router.put('/users/:id', upload.single('profilePicture'), async (req, res) => {
     const userId = req.params.id;
     const { nombre, nombreUsuario, correo, contrasena } = req.body;
+    const profilePicture = req.file ? req.file.filename : null;
+
     try {
         let hashedPassword = contrasena;
         if (contrasena) {
             hashedPassword = await bcrypt.hash(contrasena, 10);
         }
-        const [result] = await db.query(
-            'UPDATE Usuarios SET nombre = ?, nombreUsuario = ?, correo = ?, contrasena = ? WHERE usuarioID = ?',
-            [nombre, nombreUsuario, correo, hashedPassword, userId]
-        );
+
+        // Update user query
+        let updateQuery = 'UPDATE Usuarios SET nombre = ?, nombreUsuario = ?, correo = ?, contrasena = ?';
+        const queryParams = [nombre, nombreUsuario, correo, hashedPassword];
+
+        // If there's a profile picture, add it to the query
+        if (profilePicture) {
+            updateQuery += ', fotoPerfil = ?';
+            queryParams.push(profilePicture);
+        }
+
+        updateQuery += ' WHERE usuarioID = ?';
+        queryParams.push(userId);
+
+        const [result] = await db.query(updateQuery, queryParams);
         if (result.affectedRows === 0) return res.status(404).json({ error: 'User not found' });
-        res.json({ message: 'User updated successfully' });
+
+        res.json({ message: 'User updated successfully', profilePicture });
     } catch (err) {
         console.error('Error updating user:', err);
         res.status(500).json({ error: 'Database error' });
@@ -86,77 +111,6 @@ router.delete('/users/:id', async (req, res) => {
         res.status(204).send();
     } catch (err) {
         console.error('Error deleting user:', err);
-        res.status(500).json({ error: 'Database error' });
-    }
-});
-
-// CRUD for Lessons
-
-// Create a new lesson
-router.post('/lessons', async (req, res) => {
-    const { titulo, descripcion } = req.body;
-    try {
-        const [result] = await db.query(
-            'INSERT INTO Lecciones (titulo, descripcion, fechaCreacion) VALUES (?, ?, NOW())',
-            [titulo, descripcion]
-        );
-        res.status(201).json({ id: result.insertId, ...req.body });
-    } catch (err) {
-        console.error('Error creating lesson:', err);
-        res.status(500).json({ error: 'Database error' });
-    }
-});
-
-// Read all lessons
-router.get('/lessons', async (req, res) => {
-    try {
-        const [lessons] = await db.query('SELECT * FROM Lecciones');
-        res.json(lessons);
-    } catch (err) {
-        console.error('Error fetching lessons:', err);
-        res.status(500).json({ error: 'Database error' });
-    }
-});
-
-// Read a lesson by ID
-router.get('/lessons/:id', async (req, res) => {
-    const lessonId = req.params.id;
-    try {
-        const [lessons] = await db.query('SELECT * FROM Lecciones WHERE leccionID = ?', [lessonId]);
-        if (lessons.length === 0) return res.status(404).json({ error: 'Lesson not found' });
-        res.json(lessons[0]);
-    } catch (err) {
-        console.error('Error fetching lesson:', err);
-        res.status(500).json({ error: 'Database error' });
-    }
-});
-
-// Update a lesson by ID
-router.put('/lessons/:id', async (req, res) => {
-    const lessonId = req.params.id;
-    const { titulo, descripcion } = req.body;
-    try {
-        const [result] = await db.query(
-            'UPDATE Lecciones SET titulo = ?, descripcion = ? WHERE leccionID = ?',
-            [titulo, descripcion, lessonId]
-        );
-        if (result.affectedRows === 0) return res.status(404).json({ error: 'Lesson not found' });
-        res.json({ message: 'Lesson updated successfully' });
-    } catch (err) {
-        console.error('Error updating lesson:', err);
-        res.status(500).json({ error: 'Database error' });
-    }
-});
-
-// Delete a lesson by ID
-router.delete('/lessons/:id', async (req, res) => {
-    const lessonId = req.params.id;
-    try {
-        const [result] = await db.query('DELETE FROM Lecciones WHERE leccionID = ?', [lessonId]);
-        if (result.affectedRows === 0) return res.status(404).json({ error: 'Lesson not found' });
-        res.status(204).send();
-    } catch (err) {
-        console.error('Error deleting lesson:', err);
         res.status(500).json({ error: 'Database error' });
     }
 });

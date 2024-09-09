@@ -21,25 +21,25 @@ export class CoursesComponent implements OnInit {
       name: 'New Comers',
       description: 'Primera etapa donde podrás comenzar mejorando tu vocabulario',
       enrolled: 256,
-      image: 'assets/newcommers.webp',
+      image: 'assets/images/newcommers.webp',  // Corrected path
     },
     {
       name: 'Novices',
       description: 'Segunda etapa que consta de tres pasos...',
       enrolled: 128,
-      image: 'assets/novices.jpg',
+      image: 'assets/images/novices.jpg',  // Corrected path
     },
     {
       name: 'Transitionals',
       description: 'Tercera etapa llena de conversación...',
       enrolled: 74,
-      image: 'assets/transitionals.jpg',
+      image: 'assets/images/transitionals.jpg',  // Corrected path
     },
     {
       name: 'Skilled',
       description: 'Cuarta etapa para especialización...',
       enrolled: 35,
-      image: 'assets/skilled.webp',
+      image: 'assets/images/skilled.webp',  // Corrected path
     },
   ];
 
@@ -49,7 +49,6 @@ export class CoursesComponent implements OnInit {
 
   // Method to handle viewing a course
   viewCourse(course: Course) {
-    // Navigate to the current-course page with the course data as a query parameter
     this.router.navigate(['/current-course'], { queryParams: { course: JSON.stringify(course) } });
   }
 }

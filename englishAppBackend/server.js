@@ -1,6 +1,3 @@
-// server.js
-
-// Import required modules
 const express = require('express');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
@@ -35,24 +32,8 @@ app.use(session({
     cookie: { secure: false }
 }));
 
-// Serve static files from the 'src/assets' directory
-app.use('/assets', express.static(path.join(__dirname, 'src/assets')));
-
-// Configure MySQL connection
-const db = mysql.createConnection({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'new_user',
-    password: process.env.DB_PASS || 'new_password',
-    database: process.env.DB_NAME || 'englishApp'
-});
-
-db.connect((err) => {
-    if (err) {
-        console.error('Error connecting to the database:', err);
-        return;
-    }
-    console.log('Connected to the MySQL database.');
-});
+// Serve static files from the 'uploads' directory for profile pictures
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // JWT secret key
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || 'youraccesstokensecret';

@@ -1,39 +1,74 @@
-<!-- src/app/settings/settings.page.html -->
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home"></ion-back-button> <!-- Back button added here -->
+      <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-title>Settings</ion-title>
+    <ion-title>Ajustes</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="updateUserInfo()">Save</ion-button>
+      <ion-button (click)="updateUserInfo()">Guardar</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <form (ngSubmit)="updateUserInfo()">
-    <ion-item>
-      <ion-label>Name</ion-label>
-      <ion-input [(ngModel)]="user.name" name="name" required></ion-input>
-    </ion-item>
+<ion-content class="settings-content">
+  <!-- Profile Section -->
+  <div class="profile-section">
+    <img 
+      [src]="newProfilePicture ? newProfilePicture : (user?.profilePicture ? '/uploads/' + user?.profilePicture : '/assets/images/9187604.png')" 
+      alt="Profile Picture" 
+      class="profile-picture"
+    />
+    <ion-button color="medium" expand="block" (click)="fileInput.click()">
+      Cambiar foto de perfil
+    </ion-button>
+    <input type="file" accept="image/*" #fileInput (change)="onFileChange($event)" hidden />
+  </div>
 
-    <ion-item>
-      <ion-label>Username</ion-label>
-      <ion-input [(ngModel)]="user.username" name="username" required></ion-input>
-    </ion-item>
+  <!-- Form to Update User Information -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Actualizar datos</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form (ngSubmit)="updateUserInfo()">
+        <!-- Name Input -->
+        <ion-item>
+          <ion-label position="floating">Nombre</ion-label>
+          <ion-input [(ngModel)]="user.nombre" name="nombre" required></ion-input>
+        </ion-item>
 
-    <ion-item>
-      <ion-label>Email</ion-label>
-      <ion-input [(ngModel)]="user.email" name="email" type="email" required></ion-input>
-    </ion-item>
+        <!-- Username Input -->
+        <ion-item>
+          <ion-label position="floating">Nombre de Usuario</ion-label>
+          <ion-input [(ngModel)]="user.nombreUsuario" name="nombreUsuario" required></ion-input>
+        </ion-item>
 
-    <ion-item>
-      <ion-label>Profile Picture</ion-label>
-      <input type="file" (change)="onFileChange($event)" accept="image/*"/>
-    </ion-item>
+        <!-- Email Input -->
+        <ion-item>
+          <ion-label position="floating">Email</ion-label>
+          <ion-input [(ngModel)]="user.correo" name="correo" type="email" required></ion-input>
+        </ion-item>
 
-    <!-- Add more fields for payment methods or any other settings -->
-    
-  </form>
+        <!-- Password Input -->
+        <ion-item>
+          <ion-label position="floating">Contraseña</ion-label>
+          <ion-input [(ngModel)]="user.contrasena" name="contrasena" type="password"></ion-input>
+        </ion-item>
+
+        <!-- Date of Birth Input -->
+        <ion-item>
+          <ion-label position="floating">Fecha de Nacimiento</ion-label>
+          <ion-datetime
+            display-format="DD/MM/YYYY"
+            picker-format="DD/MM/YYYY"
+            [(ngModel)]="user.fechaNacimiento"
+            name="fechaNacimiento">
+          </ion-datetime>
+        </ion-item>
+
+        <!-- Update Button -->
+        <ion-button expand="full" color="primary" type="submit">Actualizar</ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

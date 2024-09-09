@@ -22,14 +22,14 @@ interface NewsItem {
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit {
-  user: any;
+  user: any = {}; // Initialize as an empty object to avoid null errors
 
   courses: Course[] = [
     {
       name: 'New Comers',
       description: 'Primera etapa donde podrás comenzar mejorando tu vocabulario',
       enrolled: 256,
-      image: 'assets/images/newcommers.webp', // Ensure the correct image path
+      image: 'assets/images/newcommers.webp',
     },
     {
       name: 'Novices',
@@ -72,10 +72,26 @@ export class HomePage implements OnInit {
     },
   ];
 
+  slideOptions = {
+    slidesPerView: 1.2,
+    spaceBetween: 10
+  };
+
   constructor(private authService: AuthenticationService, private router: Router) {}
 
   ngOnInit() {
-    this.user = this.authService.getCurrentUser(); // Fetch user data on component initialization
+    this.loadUserData(); // Fetch user data when component initializes
+  }
+
+  loadUserData() {
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser) {
+      this.user = currentUser; // Assign the user if found
+    } else {
+      // Handle the case where the user is not found
+      console.warn('User not found');
+      this.user = {}; // Assign an empty object to prevent null reference errors
+    }
   }
 
   isActive(page: string): boolean {

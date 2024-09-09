@@ -12,10 +12,17 @@
 <ion-content>
   <!-- User Profile Section -->
   <div class="user-profile" *ngIf="user">
-    <img [src]="user.profilePicture || 'assets/default-profile-picture.jpg'" alt="Profile Picture" class="profile-picture" />
+    <!-- Show default user icon if no profile picture is uploaded -->
+    <img *ngIf="user.profilePicture; else defaultIcon" 
+         [src]="user.profilePicture" 
+         alt="Profile Picture" 
+         class="profile-picture" />
+    <ng-template #defaultIcon>
+      <ion-icon name="person-circle-outline" class="default-profile-icon"></ion-icon>
+    </ng-template>
     <div class="user-info">
-      <h2>{{ user.name }}</h2>
-      <p>Email: {{ user.email }}</p>
+      <h2>{{ user.nombre }}</h2>
+      <p>Email: {{ user.correo }}</p>
     </div>
   </div>
 
@@ -48,8 +55,8 @@
       <h2>Courses</h2>
       <a routerLink="/courses" class="view-all">Ver todas</a>
     </div>
-    <ion-slides class="courses-scroll" pager="true">
-      <ion-slide *ngFor="let course of courses">
+    <div class="courses-scroll">
+      <div class="course-card" *ngFor="let course of courses">
         <ion-card>
           <img [src]="course.image" alt="Course Image" class="course-image">
           <ion-card-header>
@@ -62,8 +69,8 @@
             Ver más
           </ion-button>
         </ion-card>
-      </ion-slide>
-    </ion-slides>
+      </div>
+    </div>
   </section>
 
   <!-- News Section -->
@@ -73,10 +80,8 @@
       <a routerLink="/all-news" class="view-all">Ver todas</a>
     </div>
     <ion-list>
-      <ion-item *ngFor="let newsItem of news">
-        <ion-thumbnail slot="start">
-          <img [src]="newsItem.image" alt="News Image">
-        </ion-thumbnail>
+      <ion-item *ngFor="let newsItem of news" lines="none" class="news-item">
+        <ion-icon name="newspaper-outline" slot="start" class="news-icon"></ion-icon>
         <ion-label>
           <h3>{{ newsItem.title }}</h3>
           <p>{{ newsItem.summary }}</p>

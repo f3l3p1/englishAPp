@@ -1,0 +1,90 @@
+.settings-content {
+    --background: #e6f0ff; /* Light blue background */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh; /* Ensures full height */
+    background-image: url('/assets/images/fondo.png'); /* Ensure the correct path */
+    background-size: cover; /* Ensures the background covers the full area */
+    background-position: center;
+  }
+  
+  .profile-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 0;
+  
+    .profile-picture {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+      object-fit: cover;
+      border: 2px solid #fff; /* Optional: adds a border around the picture */
+    }
+  
+    ion-button {
+      margin-top: 10px;
+    }
+  }
+  
+  ion-card {
+    background-color: #ffffff !important; /* Solid white background for the card */
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px; /* Ensures the card doesn't stretch too wide */
+    padding: 20px;
+    margin-bottom: 20px; /* Adds spacing below the card */
+  }
+  
+  ion-card-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333; /* Dark text for title */
+    text-align: center;
+  }
+  
+  ion-item {
+    --padding-start: 10px;
+    --padding-end: 10px;
+    margin-bottom: 10px;
+    background: #f0f0f0; /* Light gray background for inputs */
+    border-radius: 10px; /* Rounded corners for input items */
+    --inner-padding-top: 20px; /* Adds padding to avoid label overlap */
+    --inner-padding-bottom: 20px; /* Adds padding to avoid label overlap */
+  }
+  
+  ion-label {
+    font-size: 14px;
+    color: #333;
+  }
+  
+  ion-input {
+    --color: #333; /* Text color */
+  }
+  
+  ion-input[placeholder] {
+    opacity: 1; /* Ensures placeholder text is visible */
+    color: #999; /* Gray color for placeholder */
+  }
+  
+  .date-picker-icon {
+    margin-left: 10px; /* Adjust space around the date picker icon */
+  }
+  
+  ion-button {
+    margin-top: 15px;
+  }
+  
+  ion-button[color="primary"] {
+    --background: #3a4ca8; /* Primary blue color */
+    --border-radius: 12px;
+  }
+  
+  ion-button[color="danger"] {
+    --background: #e74c3c; /* Danger red color */
+  }

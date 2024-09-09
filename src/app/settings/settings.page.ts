@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from '../services/authentication.service';
 
 @Component({
@@ -6,14 +6,20 @@ import { AuthenticationService } from '../services/authentication.service';
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],
 })
-export class SettingsPage {
-  user: any; // Replace with User type if you have it defined
+export class SettingsPage implements OnInit {
+  user: any = {}; // Use your User model if defined
   newProfilePicture: File | null = null;
 
   constructor(private authService: AuthenticationService) {}
 
   ngOnInit() {
-    this.user = this.authService.getCurrentUser();
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser) {
+      this.user = currentUser;
+    } else {
+      console.error('No current user found.');
+      // Handle the case where user is not available
+    }
   }
 
   onFileChange(event: any) {
@@ -24,18 +30,29 @@ export class SettingsPage {
   }
 
   updateUserInfo() {
-    const updatedUserData = {
-      name: this.user.name,
-      username: this.user.username,
-      email: this.user.email,
-      profilePicture: this.newProfilePicture,
-    };
-    
-    this.authService.updateUser(updatedUserData).subscribe((response: any) => {
-      // Handle successful update response
-      console.log('User information updated successfully:', response);
-    }, (error: any) => {
-      console.error('Error updating user information:', error);
-    });
+    if (!this.user.usuarioID) {
+      alert('User ID is missing. Please refresh the page and try again.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('nombre', this.user.nombre);
+    formData.append('nombreUsuario', this.user.nombreUsuario);
+    formData.append('correo', this.user.correo);
+    if (this.newProfilePicture) {
+      formData.append('profilePicture', this.newProfilePicture);
+    }
+
+    // Call updateUser with formData and user ID
+    this.authService.updateUser(formData, this.user.usuarioID).subscribe(
+      (response: any) => {
+        console.log('User information updated successfully:', response);
+        alert('User updated successfully');
+      },
+      (error: any) => {
+        console.error('Error updating user information:', error);
+        alert('Error updating user');
+      }
+    );
   }
 }

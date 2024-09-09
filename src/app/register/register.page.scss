@@ -1,19 +1,94 @@
-.card-container {
-    padding: 20px;
-  }
-  
-  .login-link {
-    text-align: center;
-    margin-top: 20px;
-  
-    p {
-      color: #888;
-    }
-  
-    a {
-      color: #3880ff;
-      text-decoration: underline;
-      cursor: pointer;
-    }
-  }
-  
+/* Fullscreen content adjustments */
+.register-content {
+  --background: #e6f0ff; /* Light blue background */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full height to center vertically */
+  padding: 20px;
+  position: relative; /* Allows positioning for the background pattern */
+  overflow: hidden; /* Prevents overflow issues */
+}
+
+/* Background pattern with logo */
+.background-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40vh; /* Adjust height as necessary */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Prevents overflow */
+  z-index: -1; /* Send behind content */
+}
+
+.background-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Covers the area without distortion */
+}
+
+/* Registration card section */
+.register-card {
+  width: 100%;
+  max-width: 350px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  position: relative; /* Keeps the card positioned within the parent */
+  margin-top: auto; /* Centers the card below the background pattern */
+  transform: translateX(10%); /* Adjust to move card slightly right */
+}
+
+.register-card h1 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.register-card p {
+  font-size: 14px;
+  color: #6c757d;
+  margin-bottom: 20px;
+}
+
+/* Input fields */
+.input-item {
+  margin-bottom: 15px;
+}
+
+.input-item ion-input {
+  background-color: #d9d9d9;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+/* Register button */
+.register-button {
+  --background: #3a4ca8; /* Primary blue color */
+  --border-radius: 20px;
+  font-weight: bold;
+}
+
+/* Already registered link */
+.register-card a {
+  color: #3880ff;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Error message styling */
+.error-message {
+  margin-top: 10px;
+  color: #e74c3c; /* Red color for errors */
+  font-size: 14px;
+}

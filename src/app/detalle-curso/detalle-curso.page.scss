@@ -1,0 +1,19 @@
+/* detalle-curso.page.scss */
+.lessons-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .lesson-card {
+    --background: #4e74f9; /* Customize card colors as needed */
+    border-radius: 12px;
+    text-align: center;
+  }
+  
+  .lesson-number {
+    font-size: 1.5rem;
+    color: #fff;
+    font-weight: bold;
+  }
+  

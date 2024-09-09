@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { User } from '../models/user.model';
-import { throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { User } from '../models/user.model'; // Ensure you have a proper User model defined
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -19,80 +19,80 @@ export class AuthenticationService {
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
-  async login(email: string, password: string): Promise<boolean> {
-    try {
-      const response = await this.http.post<{ token: string; user: User }>(
-        `${this.apiUrl}/login`, 
-        { correo: email, contrasena: password }
-      ).toPromise();
-
-      if (response && response.token) {
-        const token = response.token;
-        localStorage.setItem('token', token);
-        localStorage.setItem('currentUser', JSON.stringify(response.user));
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error('Login error', error);
-      return false;
-    }
+  // Login method
+  login(email: string, password: string): Observable<boolean> {
+    return this.http.post<{ token: string; user: User }>(
+      `${this.apiUrl}/login`, 
+      { correo: email, contrasena: password }
+    ).pipe(
+      map(response => {
+        if (response && response.token) {
+          localStorage.setItem('token', response.token);
+          localStorage.setItem('currentUser', JSON.stringify(response.user));
+          return true;
+        }
+        return false;
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Login error', error);
+        return throwError(() => new Error('Login failed. Please try again.'));
+      })
+    );
   }
 
-  async register(name: string, username: string, email: string, password: string): Promise<boolean | string> {
-    try {
-      await this.http.post(`${this.apiUrl}/users`, { 
-        nombre: name, 
-        nombreUsuario: username, 
-        correo: email, 
-        contrasena: password 
-      }).toPromise();
-      return true;
-    } catch (error: any) {
-      console.error('Registration error', error);
-      return error.error?.message || 'Registration failed. Please try again.';
-    }
+  // Register method
+  register(name: string, username: string, email: string, password: string): Observable<boolean | string> {
+    return this.http.post(`${this.apiUrl}/users`, { 
+      nombre: name, 
+      nombreUsuario: username, 
+      correo: email, 
+      contrasena: password 
+    }).pipe(
+      map(() => true),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Registration error', error);
+        return throwError(() => new Error(error.error?.message || 'Registration failed. Please try again.'));
+      })
+    );
   }
 
+  // Logout method
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('currentUser');
     this.router.navigate(['/login']);
   }
 
+  // Get the current logged-in user
   getCurrentUser(): User | null {
     const user = localStorage.getItem('currentUser');
     return user ? JSON.parse(user) : null;
   }
 
-  updateUser(updatedUserData: any) {
-    const formData = new FormData();
-    formData.append('name', updatedUserData.name);
-    formData.append('username', updatedUserData.username);
-    formData.append('email', updatedUserData.email);
-    
-    if (updatedUserData.profilePicture) {
-      formData.append('profilePicture', updatedUserData.profilePicture);
-    }
-
-    return this.http.post(`${this.apiUrl}/update-user`, formData, { headers: this.getHeaders() })
+  // Update user information, including profile picture
+  updateUser(formData: FormData, userId: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/users/${userId}`, formData, { headers: this.getHeaders() })
       .pipe(
         catchError((error: HttpErrorResponse) => {
-          console.error('Update user error', error);
-          return throwError(() => new Error('Error updating user'));
+          console.error('Error updating user:', error);
+          return throwError(() => new Error('Error updating user information.'));
         })
       );
   }
 
-  sendRecoveryEmail(email: string): Promise<boolean> {
-    return this.http.post(`${this.apiUrl}/send-recovery-email`, { correo: email }, { headers: this.getHeaders() }).toPromise()
-      .then(() => true)
-      .catch(error => {
-        console.error('Error sending recovery email:', error);
-        return false;
-      });
+  // Send recovery email
+  sendRecoveryEmail(email: string): Observable<boolean> {
+    return this.http.post(`${this.apiUrl}/send-recovery-email`, { correo: email }, { headers: this.getHeaders() })
+      .pipe(
+        map(() => true),
+        catchError((error: HttpErrorResponse) => {
+          console.error('Error sending recovery email:', error);
+          return throwError(() => new Error('Failed to send recovery email.'));
+        })
+      );
   }
 
+  // Placeholder methods for additional functionalities
   getCurrentCourse(): any | null {
     return null;
   }
