@@ -71,3 +71,4 @@ Thumbs.db
 .angular/cache/
 englishAppFrontend/.angular/cache/*
 englishAppFrontend/.angular/cache/*.pack
+englishAppFrontend/.angular/cache/*.pack
