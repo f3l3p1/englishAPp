@@ -1,7 +1,6 @@
 // src/app/models/user.model.ts
-
 export interface User {
-  usuarioID: number;         // Ensure this matches the backend's user ID
+  usuarioID: string;         // Typically a string if using Firebase UID
   nombre: string;            // Full name
   nombreUsuario: string;     // Username
   correo: string;            // Email
@@ -10,5 +9,4 @@ export interface User {
   completedSessions?: number; // Optional: Number of completed sessions
   completedTasks?: number;   // Optional: Number of completed tasks
   achievements?: number;     // Optional: Number of achievements earned
-  // Add other properties as needed
 }
