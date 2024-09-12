@@ -1,7 +1,6 @@
 // src/app/settings/settings.page.ts
-
 import { Component } from '@angular/core';
-import { AuthenticationService } from '../services/authentication.service';
+import { getAuth, updateProfile } from 'firebase/auth';
 
 @Component({
   selector: 'app-settings',
@@ -9,42 +8,44 @@ import { AuthenticationService } from '../services/authentication.service';
   styleUrls: ['./settings.page.scss'],
 })
 export class SettingsPage {
-  user: any = {}; // Replace with your User type if defined
+  user: any = {};  // Modify this if you have a specific User type
   newProfilePicture: File | null = null;
 
-  constructor(private authService: AuthenticationService) {}
+  constructor() {}
 
   ngOnInit() {
-    this.user = this.authService.getCurrentUser();
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      this.user = {
+        id: currentUser.uid,
+        name: currentUser.displayName || 'User',
+        email: currentUser.email,
+        profilePicture: currentUser.photoURL || ''
+      };
+    }
   }
 
   onFileChange(event: any) {
     const file = event.target.files[0];
     if (file) {
       this.newProfilePicture = file;
-      this.user.profilePicture = file; // Set the file in the user object
+      // Handle the upload of the profile picture
     }
   }
 
   updateUserInfo() {
-    const updatedUserData = {
-      id: this.user.id,
-      name: this.user.name,
-      username: this.user.username,
-      email: this.user.email,
-      profilePicture: this.newProfilePicture, // Include the profile picture
-    };
-
-    // Ensure that updateUser is called with correct number of arguments
-    this.authService.updateUser(updatedUserData).subscribe(
-      (response: any) => {
-        console.log('User information updated successfully:', response);
-        alert('User updated successfully');
-      },
-      (error: any) => {
-        console.error('Error updating user information:', error);
-        alert('Error updating user');
-      }
-    );
+    if (!this.user) return;
+    const auth = getAuth();
+    updateProfile(auth.currentUser!, {
+      displayName: this.user.name,
+      photoURL: this.newProfilePicture ? URL.createObjectURL(this.newProfilePicture) : this.user.profilePicture
+    }).then(() => {
+      console.log('User profile updated successfully');
+      alert('User updated successfully');
+    }).catch((error) => {
+      console.error('Error updating user profile:', error);
+      alert('Error updating user');
+    });
   }
 }

@@ -1,6 +1,7 @@
+// src/app/recovery/recovery.page.ts
 import { Component } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { AuthenticationService } from '../services/authentication.service';
+import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
 
 @Component({
   selector: 'app-recovery',
@@ -10,15 +11,17 @@ import { AuthenticationService } from '../services/authentication.service';
 export class RecoveryPage {
   email: string = '';
 
-  constructor(private navCtrl: NavController, private authService: AuthenticationService) {}
+  constructor(private navCtrl: NavController) {}
 
   async sendRecoveryEmail() {
     if (this.email) {
-      const success = await this.authService.sendRecoveryEmail(this.email);
-      if (success) {
+      try {
+        const auth = getAuth();
+        await sendPasswordResetEmail(auth, this.email);
         alert('Recovery email sent! Please check your inbox.');
-      } else {
+      } catch (error) {
         alert('No account found with that email address.');
+        console.error('Error sending recovery email:', error);
       }
     } else {
       alert('Please enter your email address.');
@@ -26,6 +29,6 @@ export class RecoveryPage {
   }
 
   navigateBackToLogin() {
-    this.navCtrl.navigateBack('/login'); // Navigate back to Login page
+    this.navCtrl.navigateBack('/login');
   }
 }

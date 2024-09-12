@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from '../services/authentication.service';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { Router } from '@angular/router';
-import { User } from '../models/user.model'; // Ensure this matches your User model
+import { User } from '../models/user.model'; // Updated model should be used
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -25,10 +25,9 @@ interface NewsItem {
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit {
-  user: User | null = null; // Explicitly typed user variable
-  users: User[] = []; // List to hold all users
-  error: string | null = null; // To hold error messages if fetching fails
-
+  user: User | null = null; // Current logged-in user
+  users: User[] = []; // List of all users
+  error: string | null = null; // Error message, if any
   courses: Course[] = [
     {
       name: 'New Comers',
@@ -55,7 +54,6 @@ export class HomePage implements OnInit {
       image: 'assets/images/skilled.webp',
     },
   ];
-
   news: NewsItem[] = [
     {
       title: 'English Tea',
@@ -82,44 +80,41 @@ export class HomePage implements OnInit {
     spaceBetween: 10,
   };
 
-  constructor(private authService: AuthenticationService, private router: Router) {}
+  constructor(private router: Router) {}
 
   ngOnInit() {
-    this.loadUserData(); // Fetch the logged-in user data
-    this.loadUsers(); // Fetch all users
+    this.loadUserData();
+    this.loadUsers();
   }
 
   loadUserData() {
-    this.authService.getCurrentUser().pipe(
-      catchError(error => {
-        console.error('Error fetching user data:', error);
-        return of(null); // Fallback to null on error
-      })
-    ).subscribe(user => {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
       if (user) {
-        this.user = user;
+        this.user = {
+          usuarioID: user.uid, // `usuarioID` now correctly typed as a string
+          nombre: user.displayName || 'User',
+          nombreUsuario: user.displayName || 'User',
+          correo: user.email || '',
+          completedSessions: 0,
+          completedTasks: 0,
+          achievements: 0,
+          profilePicture: user.photoURL || ''
+        };
         console.log('User loaded:', this.user);
       } else {
-        console.log('No user found or user is null');
+        console.log('No user is signed in.');
       }
     });
   }
 
   loadUsers() {
-    this.authService.getUsers().pipe(
-      catchError(error => {
-        console.error('Error loading users:', error); // Log the error
-        this.error = 'Failed to load users'; // Set an error message for UI feedback
-        return of([]); // Return an empty array to keep the app running
-      })
-    ).subscribe(users => {
-      this.users = users;
-      console.log('Users loaded:', this.users);
-    });
-  }
-
-  isActive(page: string): boolean {
-    return this.router.url === `/${page}`;
+    // Placeholder users; replace with actual logic for fetching users from Firestore or another service
+    this.users = [
+      { usuarioID: '1', nombre: 'John Doe', nombreUsuario: 'johnd', correo: 'john@example.com' },
+      { usuarioID: '2', nombre: 'Jane Doe', nombreUsuario: 'janed', correo: 'jane@example.com' }
+    ];
+    console.log('Users loaded:', this.users);
   }
 
   viewCourse(course: Course) {
