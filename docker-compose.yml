@@ -1,0 +1,40 @@
+version: '3'
+services:
+  backend:
+    build:
+      context: ./englishAppBackend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_HOST=db
+      - DB_USER=new_user
+      - DB_PASS=new_password
+      - DB_NAME=englishApp
+      - ACCESS_TOKEN_SECRET=supersecrettokenkey
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./englishAppFrontend
+      dockerfile: Dockerfile
+    ports:
+      - "8100:8100"
+    depends_on:
+      - backend
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: englishApp
+      MYSQL_USER: new_user
+      MYSQL_PASSWORD: new_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:

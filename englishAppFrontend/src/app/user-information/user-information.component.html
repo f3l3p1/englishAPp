@@ -1,0 +1,90 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="notifications-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>User Information</ion-title>
+    <ion-buttons slot="end">
+      <ion-button>
+        <ion-icon name="settings-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="user">
+  <div class="user-profile">
+    <img [src]="user.profilePicture || 'path/to/default/profile-picture.jpg'" alt="Profile Picture" class="profile-picture" />
+    <div class="user-info">
+      <h2>{{ user.nombre }}</h2>
+      <p>Email: {{ user.correo }}</p>
+    </div>
+  </div>
+
+  <ion-card class="stats-card">
+    <ion-card-content>
+      <div class="stats-section">
+        <div class="stat-item">
+          <h3>Completed Sessions</h3>
+          <p>{{ user.completedSessions || 0 }}</p>
+        </div>
+        <div class="stat-item">
+          <h3>Completed Tasks</h3>
+          <p>{{ user.completedTasks || 0 }}</p>
+        </div>
+        <div class="stat-item">
+          <h3>Achievements</h3>
+          <p>{{ user.achievements || 0 }}</p>
+        </div>
+      </div>
+
+      <!-- Current Course -->
+      <div class="course-info" *ngIf="currentCourse">
+        <img [src]="currentCourse.image" alt="Course Image" class="course-image" />
+        <div class="course-details">
+          <h3>{{ currentCourse.name }}</h3>
+          <p>{{ currentCourse.description }}</p>
+          <a [routerLink]="['/courses', currentCourse.id]" class="see-more">See more</a>
+          <ion-progress-bar [value]="currentCourse.progress / 100"></ion-progress-bar>
+        </div>
+      </div>
+      
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Past Sessions Section -->
+  <section class="past-sessions">
+    <h2>Past Sessions</h2>
+    <div class="sessions-scroll">
+      <ng-container *ngFor="let session of pastSessions">
+        <div class="session-item">
+          <h3>{{ session.name }}</h3>
+          <a routerLink="/comments/{{ session.id }}" class="see-comments">See comments</a>
+        </div>
+      </ng-container>
+    </div>
+  </section>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button routerLink="/home" [class.active]="isActive('home')">
+        <ion-icon name="home-outline" [class.red]="isActive('home')"></ion-icon>
+      </ion-button>
+      <ion-button routerLink="/user-information" [class.active]="isActive('user-information')">
+        <ion-icon name="person-outline" [class.red]="isActive('user-information')"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/courses" [class.active]="isActive('courses')">
+        <ion-icon name="book-outline" [class.red]="isActive('courses')"></ion-icon>
+      </ion-button>
+      <ion-button routerLink="/tasks" [class.active]="isActive('tasks')">
+        <ion-icon name="checklist-outline" [class.red]="isActive('tasks')"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

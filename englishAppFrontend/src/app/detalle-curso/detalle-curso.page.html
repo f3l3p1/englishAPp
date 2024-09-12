@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/courses"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ course?.name }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToSettings()">
+        <ion-icon name="settings-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card *ngIf="course">
+    <ion-item>
+      <ion-thumbnail slot="start">
+        <img [src]="course.image" alt="{{ course.name }} Image">
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{ course.name }}</h2>
+        <p>{{ course.description }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-card>
+
+  <!-- Add more content as needed -->
+</ion-content>
