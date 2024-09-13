@@ -1,9 +1,11 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": ["jest"], // Add types if using Jest for testing
+    "paths": {
+      "@firebaseConfig": ["src/firebase/firebaseConfig.ts"] // Include the alias here as well
+    }
   },
   "files": [
     "src/main.ts",

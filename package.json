@@ -4,5 +4,10 @@
     "firebase": "^10.13.1",
     "firebase-admin": "^12.4.0"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@types/firebase": "^3.2.1",
+    "@types/jasmine": "^5.1.4",
+    "@types/jest": "^29.5.13"
+  }
 }

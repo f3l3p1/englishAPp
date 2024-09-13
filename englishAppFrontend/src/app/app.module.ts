@@ -1,14 +1,15 @@
 // src/app/app.module.ts
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { IonicModule } from '@ionic/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { AuthInterceptor } from 'src/app/services/interceptors/auth.interceptor';
-import { AngularFireModule } from '@angular/fire/compat';
-import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { environment } from '../environments/environment';
+import { FirebaseApp, FirebaseAppModule, provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import {connectAuthEmulator, getAuth, provideAuth} from '@angular/fire/auth';
+import {connectFirestoreEmulator, getFirestore, provideFirestore} from "@angular/fire/firestore";
+import { LoginPageModule } from './login/login.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -17,16 +18,18 @@ import { environment } from '../environments/environment';
     HttpClientModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    AngularFireModule.initializeApp(environment.firebase), // Firebase setup
-    AngularFireAuthModule // For Firebase Auth
+    LoginPageModule
   ],
-  providers: [
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    }
-  ],
+ providers: [provideFirebaseApp(() => initializeApp(environment.firebase)),
+  provideAuth(() => {
+    const auth = getAuth();
+    return auth;
+  }),
+  provideFirestore(() => {
+    const firestore = getFirestore();
+    return firestore;
+  })],
+
   bootstrap: [AppComponent]
 })
 export class AppModule { }

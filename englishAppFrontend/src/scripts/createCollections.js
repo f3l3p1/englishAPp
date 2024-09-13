@@ -1,7 +1,7 @@
 // createCollections.js
 
 import { collection, doc, setDoc } from 'firebase/firestore';
-import { db } from './firebaseConfig.js'; // Ensure the path is correct
+import { db } from '../firebase/firebaseConfig.js'; // Ensure the path is correct
 
 async function createCollections() {
   try {

@@ -1,12 +1,12 @@
 // src/app/models/user.model.ts
 export interface User {
-  usuarioID: string; // Change from number to string
+  usuarioID: string;  // Cambiado a string para coincidir con los datos de Firebase
   nombre: string;
   nombreUsuario: string;
   correo: string;
-  completedSessions?: number; // Optional
-  completedTasks?: number;     // Optional
-  achievements?: number;       // Optional
-  profilePicture?: string;     // Optional
-  // Add other properties as needed
+  contrasena?: string;
+  profilePicture?: string;
+  completedSessions?: number;
+  completedTasks?: number;
+  achievements?: number;
 }

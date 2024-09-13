@@ -1,40 +1,53 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
+    "target": "es2022",
+    "module": "es2020",
+    "moduleResolution": "node",
     "outDir": "./dist/out-tsc",
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
+    "baseUrl": "./",
+    "paths": {
+      "*": ["node_modules/*", "src/types/*"]
+    },
     "sourceMap": true,
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2022",
-    "module": "es2020",
+    "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowJs": true,                    // Allows importing .js files
+    "resolveJsonModule": true,          // Allows importing .json files
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"                    // Make sure your type definitions are in this directory
+    ],
     "lib": [
       "es2018",
       "dom"
     ],
     "useDefineForClassFields": false,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./src/@types"
-    ],
-    "esModuleInterop": true,                // Add this to support ES module interoperability
-    "allowSyntheticDefaultImports": true,   // Add this to allow default imports from modules with no default export
-    "skipLibCheck": true,                   // Speed up compilation by skipping type checks on declaration files
-    "strictNullChecks": true                // Ensure that null and undefined are only assignable to themselves
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "strictNullChecks": true           // Ensures null and undefined are only assignable to themselves
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts"                   // Ensure .d.ts files are included
+, "src/firebase/firebaseConfig.js"  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
 }
